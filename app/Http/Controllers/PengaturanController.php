@@ -60,7 +60,7 @@ class PengaturanController extends Controller
         ]);
 
         DB::transaction(function () use ($validated) {
-            $settings = LaundrySetting::query()->first() ?? new LaundrySetting();
+            $settings = LaundrySetting::query()->first() ?? new LaundrySetting;
             $settings->fill(collect($validated)->except([
                 'current_password',
                 'new_password',

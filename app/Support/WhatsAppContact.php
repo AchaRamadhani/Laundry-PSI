@@ -38,10 +38,10 @@ class WhatsAppContact
     public static function customerMessage(): string
     {
         return implode("\n", [
-            '*Hai Min!* Mau tanya soal cucian saya, nih!' . "\n",
+            '*Hai Min!* Mau tanya soal cucian saya, nih!'."\n",
             '*Atas nama*:   _[isi nama yang tertera di nota transaksi Anda]_',
-            '*No. Nota* :   _[isi nomor nota transaksi Anda]_' . "\n",
-            '_[tulis pertanyaan atau pesan Anda di sini]_'. "\n",
+            '*No. Nota* :   _[isi nomor nota transaksi Anda]_'."\n",
+            '_[tulis pertanyaan atau pesan Anda di sini]_'."\n",
             'Ditunggu balasannya ya, Min. *Terima kasih!* ',
         ]);
     }

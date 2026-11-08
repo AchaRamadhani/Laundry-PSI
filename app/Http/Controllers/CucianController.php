@@ -260,7 +260,7 @@ class CucianController extends Controller
             'catatan' => ['nullable', 'string', 'max:2000'],
             'paket_laundry_id' => ['required', 'array', 'min:1'],
             'paket_laundry_id.*' => ['required', 'integer', 'exists:paket_laundry,id'],
-            'berat_qty' => ['required', 'array', 'size:' . $jumlahLayanan],
+            'berat_qty' => ['required', 'array', 'size:'.$jumlahLayanan],
             'berat_qty.*' => ['required', 'numeric', 'gt:0'],
         ], [
             'pelanggan_id.required' => 'Pilih pelanggan terlebih dahulu.',
@@ -299,16 +299,16 @@ class CucianController extends Controller
 
     private function nomorNota(string $tanggalMasuk): string
     {
-        $prefix = 'GL-' . Carbon::parse($tanggalMasuk)->format('ymd') . '-';
+        $prefix = 'GL-'.Carbon::parse($tanggalMasuk)->format('ymd').'-';
         // Ambil akhiran nota sebagai nomor urut untuk tanggal masuk yang dipilih.
         $terakhir = Transaksi::query()
-            ->where('no_nota', 'like', $prefix . '%')
+            ->where('no_nota', 'like', $prefix.'%')
             ->orderByDesc('no_nota')
             ->value('no_nota');
         $nomor = $terakhir ? (int) substr($terakhir, -3) + 1 : 1;
 
         do {
-            $nota = $prefix . str_pad((string) $nomor, 3, '0', STR_PAD_LEFT);
+            $nota = $prefix.str_pad((string) $nomor, 3, '0', STR_PAD_LEFT);
             $nomor++;
         } while (Transaksi::query()->whereKey($nota)->exists());
 
@@ -354,14 +354,14 @@ class CucianController extends Controller
         }
 
         return $aktivitas->map(function ($item) {
-                $status = strtolower($item->status);
-                $item->label = in_array($status, ['antrean', 'antrian'], true)
-                    ? 'Data cucian baru ditambahkan'
-                    : 'Status cucian diperbarui';
-                $item->status_label = self::STATUS_LABELS[$status] ?? ucfirst($status);
-                $item->warna = self::STATUS_COLORS[$status] ?? '#4b91ed';
+            $status = strtolower($item->status);
+            $item->label = in_array($status, ['antrean', 'antrian'], true)
+                ? 'Data cucian baru ditambahkan'
+                : 'Status cucian diperbarui';
+            $item->status_label = self::STATUS_LABELS[$status] ?? ucfirst($status);
+            $item->warna = self::STATUS_COLORS[$status] ?? '#4b91ed';
 
-                return $item;
-            });
+            return $item;
+        });
     }
 }

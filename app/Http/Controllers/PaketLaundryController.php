@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 class PaketLaundryController extends Controller
 {
     private const KATEGORI_DEFAULT = ['Kiloan', 'Khusus', 'Satuan'];
+
     private const STATUS_VALID = ['aktif', 'nonaktif'];
 
     public function index(Request $request)
@@ -75,7 +76,7 @@ class PaketLaundryController extends Controller
         $paket = PaketLaundry::create($this->validatedData($request));
 
         return redirect()->route('paket-laundry.index')
-            ->with('success', 'Paket laundry ' . $paket->nama_paket . ' berhasil ditambahkan.');
+            ->with('success', 'Paket laundry '.$paket->nama_paket.' berhasil ditambahkan.');
     }
 
     public function show(PaketLaundry $paket)
@@ -105,7 +106,7 @@ class PaketLaundryController extends Controller
         $paket->update($this->validatedData($request));
 
         return redirect()->route('paket-laundry.index')
-            ->with('success', 'Paket laundry ' . $paket->nama_paket . ' berhasil diperbarui.');
+            ->with('success', 'Paket laundry '.$paket->nama_paket.' berhasil diperbarui.');
     }
 
     public function destroy(PaketLaundry $paket)
@@ -119,7 +120,7 @@ class PaketLaundryController extends Controller
         $paket->delete();
 
         return redirect()->route('paket-laundry.index')
-            ->with('success', 'Paket laundry ' . $nama . ' berhasil dihapus.');
+            ->with('success', 'Paket laundry '.$nama.' berhasil dihapus.');
     }
 
     private function validatedData(Request $request): array

@@ -7,9 +7,9 @@ use App\Actions\Fortify\CreateNewUser;
 /* @end-chisel-registration */
 use App\Actions\Fortify\ResetUserPassword;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -30,23 +30,23 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-    Fortify::authenticateUsing(function (Request $request) {
-        $login = $request->input('email');
+        Fortify::authenticateUsing(function (Request $request) {
+            $login = $request->input('email');
 
-        $user = User::where('username', $login)
-            ->orWhere('email', $login)
-            ->first();
+            $user = User::where('username', $login)
+                ->orWhere('email', $login)
+                ->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            return $user;
-        }
+            if ($user && Hash::check($request->password, $user->password)) {
+                return $user;
+            }
 
-        return null;
-    });
+            return null;
+        });
 
-    $this->configureActions();
-    $this->configureViews();
-    $this->configureRateLimiting();
+        $this->configureActions();
+        $this->configureViews();
+        $this->configureRateLimiting();
     }
 
     /**

@@ -168,7 +168,7 @@ class UpdateStatusController extends Controller
                 'no_nota' => $transaksi->no_nota,
                 'id_admin' => auth()->id(),
                 'status' => $statusBaru,
-                'catatan_status' => $catatan !== '' ? $catatan : 'Status diperbarui menjadi ' . self::STEPS[$statusBaru] . '.',
+                'catatan_status' => $catatan !== '' ? $catatan : 'Status diperbarui menjadi '.self::STEPS[$statusBaru].'.',
                 'waktu_status' => now(),
             ]);
         });

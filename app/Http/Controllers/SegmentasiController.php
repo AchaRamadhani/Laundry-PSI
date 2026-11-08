@@ -10,8 +10,11 @@ use Illuminate\Http\Request;
 class SegmentasiController extends Controller
 {
     private const LOYAL_MIN_TRANSACTIONS = 6;
+
     private const LOYAL_RECENT_DAYS = 30;
+
     private const ACTIVE_WINDOW_DAYS = 60;
+
     private const FREQUENCY_WINDOW_DAYS = 90;
 
     public function index(Request $request)
@@ -124,10 +127,10 @@ class SegmentasiController extends Controller
 
         $selisih = $tanggalDaftar->diff(Carbon::now());
         if ($selisih->y > 0) {
-            return $selisih->y . ' tahun ' . $selisih->m . ' bulan';
+            return $selisih->y.' tahun '.$selisih->m.' bulan';
         }
         if ($selisih->m > 0) {
-            return $selisih->m . ' bulan';
+            return $selisih->m.' bulan';
         }
 
         return 'Kurang dari 1 bulan';

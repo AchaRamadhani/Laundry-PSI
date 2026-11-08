@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Support\LaundryOptions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -44,7 +44,7 @@ class DashboardController extends Controller
         $transaksiBulan = DB::table('transaksi')
             ->whereBetween('tanggal_masuk', [
                 $awalBulan->toDateString(),
-                $akhirBulan->toDateString()
+                $akhirBulan->toDateString(),
             ]);
 
         // KPI
@@ -200,7 +200,7 @@ class DashboardController extends Controller
             )
             ->whereBetween('transaksi.tanggal_masuk', [
                 $awalBulan->toDateString(),
-                $akhirBulan->toDateString()
+                $akhirBulan->toDateString(),
             ])
             ->select(
                 'paket_laundry.nama_paket',
