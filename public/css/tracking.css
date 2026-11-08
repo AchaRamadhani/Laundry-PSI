@@ -1,0 +1,199 @@
+.tracking-frame { padding-top: 17px; }
+.tracking-page-main { display: flex; flex-direction: column; }
+.tracking-page-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); align-items: start; gap: 30px; padding: 25px 23px 19px; }
+.tracking-left-column, .tracking-right-column { display: flex; min-width: 0; flex-direction: column; }
+.tracking-left-column { gap: 13px; }
+.tracking-right-column { gap: 17px; padding-top: 16px; }
+.tracking-page-intro h1 { margin: 0; color: #080a0e; font-size: clamp(37px, 4.4vw, 48px); font-weight: 750; letter-spacing: -.04em; line-height: 1.12; }
+.tracking-page-intro h1 span { color: var(--blue); }
+.tracking-page-intro p { max-width: 410px; margin: 10px 0 0; color: #4d5b76; font-size: 16px; line-height: 1.35; }
+.tracking-page-hero-image { display: block; width: min(100%, 440px); height: 168px; margin: 5px 0 0 -4px; object-fit: contain; object-position: left center; }
+.tracking-search-card, .tracking-history-card, .tracking-detail-card { min-width: 0; border: 1px solid #d7d9de; border-radius: 9px; background: #fff; box-shadow: 0 1px 4px rgb(16 24 40 / 16%); }
+.tracking-search-card { padding: 14px 14px 11px; }
+.tracking-search-card h2, .tracking-history-heading h2, .tracking-detail-card h2 { margin: 0; color: #101318; font-size: 16px; font-weight: 700; }
+.tracking-search-card > p { margin: 4px 0 9px; color: #818896; font-size: 10px; }
+.tracking-search-form { display: grid; gap: 7px; }
+.tracking-search-form .input-wrap { min-height: 34px; border-radius: 5px; }
+.tracking-search-form .input-wrap input { font-size: 12px; }
+.tracking-search-form .check-button { min-height: 34px; border-radius: 5px; }
+.tracking-whatsapp-button { display: flex; min-height: 31px; align-items: center; justify-content: center; gap: 8px; margin-top: 7px; color: var(--green); border: 1px solid #1aa76b; border-radius: 5px; font-size: 11px; font-weight: 700; transition: background .15s ease; }
+.tracking-whatsapp-button:hover { background: #effaf5; }
+.tracking-whatsapp-button svg { width: 17px; height: 17px; }
+.tracking-history-card { width: min(74%, 365px); min-width: 300px; align-self: flex-end; padding: 14px 14px 11px; }
+.tracking-history-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.tracking-history-heading h2 { font-size: 13px; }
+.tracking-history-heading > span { overflow: hidden; color: #768196; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.tracking-history-message { margin: 0 0 7px; color: #8590a0; font-size: 9px; line-height: 1.35; }
+.tracking-history-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.tracking-history-item { position: relative; display: grid; min-height: 34px; grid-template-columns: 25px minmax(0, 1fr) auto; align-items: center; gap: 8px; color: #a6abb3; }
+.tracking-history-item:not(:last-child)::after { position: absolute; z-index: 0; top: 24px; bottom: -10px; left: 12px; width: 1px; background: #d9dde4; content: ''; }
+.tracking-history-icon { position: relative; z-index: 1; display: grid; width: 25px; height: 25px; place-items: center; color: #a9afb8; border: 1px solid #d4d8df; border-radius: 50%; background: #fff; }
+.tracking-history-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.tracking-history-label { min-width: 0; color: #9a9da4; font-size: 9px; }
+.tracking-history-item time { color: #a6a8ad; font-size: 8px; white-space: nowrap; }
+.tracking-history-item.is-done { color: #fff; }
+.tracking-history-item.is-done .tracking-history-icon { color: #fff; border-color: var(--blue); background: var(--blue); }
+.tracking-history-item.is-done:not(:last-child)::after { background: #4d8dff; }
+.tracking-history-item.is-done .tracking-history-label { color: #29303d; }
+.tracking-history-item.is-current .tracking-history-label, .tracking-history-item.is-current time { color: var(--blue); font-weight: 700; }
+.tracking-history-item.is-current .tracking-history-icon { box-shadow: 0 0 0 3px rgb(7 95 232 / 12%); }
+.tracking-detail-card { min-height: 153px; padding: 10px 13px 11px; }
+.tracking-detail-card h2 { margin-bottom: 7px; font-size: 13px; }
+.tracking-result-layout { display: grid; grid-template-columns: minmax(190px, .84fr) minmax(0, 1.16fr); align-items: center; }
+.tracking-receipt-details { display: grid; gap: 8px; margin: 0; padding-right: 12px; }
+.tracking-receipt-details > div { display: grid; grid-template-columns: minmax(82px, .95fr) minmax(0, 1.05fr); gap: 5px; font-size: 8px; line-height: 1.2; }
+.tracking-receipt-details dt { color: #59657a; }
+.tracking-receipt-details dd { overflow: hidden; margin: 0; color: #1c2431; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.tracking-receipt-details .tracking-current-status { color: var(--blue); }
+.tracking-progress { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: 1px; padding: 14px 0 0 11px; border-left: 1px solid #e2e5e9; }
+.tracking-progress-step { position: relative; z-index: 0; display: flex; min-width: 0; flex: 1 1 0; flex-direction: column; align-items: center; gap: 5px; color: #adb1b8; text-align: center; }
+.tracking-progress-step:not(:last-child)::after { position: absolute; z-index: -1; top: 12px; left: calc(50% + 12px); width: calc(100% - 12px); height: 2px; background: #dfe3e9; content: ''; }
+.tracking-progress-step.is-done:not(:last-child)::after { background: #4d8dff; }
+.tracking-stage-icon { display: grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; border: 1px solid #d4d8df; border-radius: 50%; background: #fff; }
+.tracking-stage-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.tracking-progress-step.is-done { color: var(--blue); }
+.tracking-progress-step.is-done .tracking-stage-icon { color: #fff; border-color: var(--blue); background: var(--blue); }
+.tracking-progress-step.is-current .tracking-stage-icon { box-shadow: 0 0 0 3px rgb(7 95 232 / 14%); }
+.tracking-progress-step small { overflow-wrap: anywhere; color: #737b87; font-size: 6px; line-height: 1.15; }
+.tracking-progress-step.is-done small { color: #344157; }
+.tracking-empty-result { display: flex; min-height: 103px; align-items: center; gap: 10px; padding: 9px 5px; color: #304766; }
+.tracking-empty-icon { display: grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; color: #fff; border-radius: 50%; background: var(--blue); font-size: 14px; font-weight: 700; }
+.tracking-not-found .tracking-empty-icon { background: #e34a4a; }
+.tracking-empty-result strong { display: block; color: #273349; font-size: 10px; }
+.tracking-empty-result p { margin: 4px 0 0; color: #778396; font-size: 9px; line-height: 1.4; }
+.tracking-contact-strip { margin-top: 0; }
+.tracking-open-pill { display: inline-flex; width: fit-content; align-items: center; padding: 3px 12px; border: 1px solid #179c62; border-radius: 5px; font-size: 12px !important; line-height: 1.1; }
+.tracking-open-pill.is-open { color: #0e975b; background: #eafff3; }
+.tracking-open-pill.is-closed { color: #bd3636; border-color: #dc8585; background: #fff1f1; }
+.tracking-contact-strip .contact-copy small b { color: #d86454; font-weight: 500; }
+.tracking-contact-strip .address-item .contact-copy strong { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; white-space: normal; }
+.tracking-page-main .site-footer { margin-top: 0; }
+@media (max-width: 1020px) {
+    .tracking-page-grid { gap: 20px; padding-right: 16px; padding-left: 16px; }
+    .tracking-page-intro h1 { font-size: clamp(34px, 4.4vw, 44px); }
+    .tracking-page-hero-image { height: 150px; }
+    .tracking-result-layout { grid-template-columns: 1fr; gap: 9px; }
+    .tracking-receipt-details { grid-template-columns: 1fr 1fr; padding-right: 0; }
+    .tracking-progress { padding: 8px 0 0; border-top: 1px solid #e2e5e9; border-left: 0; }
+    .tracking-history-card { width: min(82%, 365px); }
+    .tracking-contact-strip { margin-right: 16px; margin-left: 16px; }
+}
+@media (max-width: 760px) {
+    .tracking-page-grid { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 19px 12px 15px; }
+    .tracking-left-column { gap: 8px; }
+    .tracking-right-column { gap: 10px; padding-top: 0; }
+    .tracking-page-intro h1 { font-size: clamp(33px, 8vw, 43px); }
+    .tracking-page-intro p { margin-top: 7px; font-size: 14px; }
+    .tracking-page-hero-image { width: min(100%, 410px); height: 145px; margin: 0 auto; object-position: center; }
+    .tracking-detail-card { min-height: 0; }
+    .tracking-history-card { width: 100%; min-width: 0; }
+    .tracking-contact-strip { margin-right: 12px; margin-left: 12px; }
+}
+@media (max-width: 480px) {
+    .tracking-page-grid { gap: 9px; padding: 16px 8px 13px; }
+    .tracking-page-intro h1 { font-size: 34px; }
+    .tracking-page-intro p { font-size: 13px; }
+    .tracking-page-hero-image { height: 125px; }
+    .tracking-search-card { padding: 13px 12px 10px; }
+    .tracking-search-card h2 { font-size: 15px; }
+    .tracking-receipt-details { grid-template-columns: 1fr; gap: 6px; }
+    .tracking-receipt-details > div { grid-template-columns: minmax(112px, .8fr) minmax(0, 1.2fr); }
+    .tracking-progress { gap: 0; padding-top: 10px; }
+    .tracking-progress-step:not(:last-child)::after { left: calc(50% + 11px); width: calc(100% - 10px); }
+    .tracking-stage-icon { width: 22px; height: 22px; flex-basis: 22px; }
+    .tracking-progress-step small { font-size: 7px; }
+    .tracking-history-item { min-height: 32px; }
+    .tracking-history-item:not(:last-child)::after { top: 23px; left: 12px; }
+    .tracking-contact-strip { margin-right: 8px; margin-left: 8px; }
+}
+
+/* Tracking layout: one connected hero area with readable details and tighter grouping. */
+.tracking-page-main { width: min(100%, 1680px); align-self: center; }
+.tracking-page-grid { grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); align-items: stretch; gap: clamp(12px, 1.2vw, 20px); padding: 20px clamp(16px, 1.5vw, 24px) 22px; }
+.tracking-left-column { gap: 14px; }
+.tracking-right-column { gap: 14px; padding-top: 0; }
+.tracking-page-intro { position: relative; display: flex; min-height: clamp(235px, 20vw, 300px); flex-direction: column; align-items: flex-start; justify-content: center; isolation: isolate; overflow: hidden; padding: clamp(22px, 2.5vw, 36px); border: 1px solid #dce7f5; border-radius: 15px; background: linear-gradient(115deg, #f7faff 0%, #f1f6ff 58%, #eaf3ff 100%); box-shadow: 0 7px 20px rgb(35 74 132 / 8%); }
+.tracking-page-intro::before { position: absolute; z-index: 1; inset: 0; background: linear-gradient(90deg, #f7faff 0%, rgb(247 250 255 / 96%) 32%, rgb(247 250 255 / 62%) 53%, rgb(247 250 255 / 12%) 100%); content: ""; pointer-events: none; }
+.tracking-page-intro h1, .tracking-page-intro p { position: relative; z-index: 2; max-width: min(58%, 560px); }
+.tracking-page-intro h1 { font-size: clamp(42px, 4vw, 58px); line-height: 1.04; }
+.tracking-page-intro p { margin-top: 15px; color: #405374; font-size: clamp(16px, 1.35vw, 19px); line-height: 1.48; }
+.tracking-page-hero-image { position: absolute; z-index: 0; top: 50%; right: -1%; width: min(72%, 680px); height: 108%; margin: 0; transform: translateY(-50%); object-fit: contain; object-position: right center; opacity: .94; filter: drop-shadow(0 12px 15px rgb(31 74 137 / 12%)); }
+.tracking-search-card, .tracking-history-card, .tracking-detail-card { border-color: #d9e2ef; box-shadow: 0 5px 15px rgb(16 40 82 / 8%); }
+.tracking-search-card { padding: 18px 19px 16px; }
+.tracking-search-card h2, .tracking-history-heading h2, .tracking-detail-card h2 { font-size: 18px; }
+.tracking-search-card > p { margin: 5px 0 12px; color: #65758e; font-size: 13px; line-height: 1.4; }
+.tracking-search-form { gap: 10px; }
+.tracking-search-form .input-wrap { min-height: 46px; border-radius: 7px; }
+.tracking-search-form .input-wrap input { font-size: 15px; }
+.tracking-search-form .check-button { min-height: 45px; border-radius: 7px; font-size: 14px; }
+.tracking-whatsapp-button { min-height: 42px; margin-top: 9px; border-radius: 7px; font-size: 13px; }
+.tracking-history-card { width: 100%; min-width: 0; align-self: stretch; padding: 17px 18px 15px; }
+.tracking-history-heading { margin-bottom: 8px; }
+.tracking-history-heading h2 { font-size: 17px; }
+.tracking-history-heading > span { font-size: 12px; }
+.tracking-history-message { margin-bottom: 10px; color: #65758e; font-size: 12px; line-height: 1.45; }
+.tracking-history-item { min-height: 39px; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; }
+.tracking-history-item:not(:last-child)::after { top: 27px; bottom: -12px; left: 14px; }
+.tracking-history-icon { width: 29px; height: 29px; }
+.tracking-history-icon svg { width: 17px; height: 17px; }
+.tracking-history-label { font-size: 12px; }
+.tracking-history-item time { font-size: 11px; }
+.tracking-detail-card { min-height: 184px; padding: 15px 17px; }
+.tracking-detail-card h2 { margin-bottom: 10px; }
+.tracking-result-layout { grid-template-columns: minmax(210px, .82fr) minmax(0, 1.18fr); gap: 10px; }
+.tracking-receipt-details { gap: 9px; padding-right: 15px; }
+.tracking-receipt-details > div { grid-template-columns: minmax(90px, .9fr) minmax(0, 1.1fr); font-size: 12px; line-height: 1.35; }
+.tracking-progress { gap: 3px; padding: 13px 0 0 14px; }
+.tracking-stage-icon { width: 30px; height: 30px; flex-basis: 30px; }
+.tracking-stage-icon svg { width: 17px; height: 17px; }
+.tracking-progress-step:not(:last-child)::after { top: 14px; left: calc(50% + 15px); width: calc(100% - 15px); }
+.tracking-progress-step small { font-size: 9px; line-height: 1.25; }
+.tracking-empty-result { min-height: 110px; gap: 12px; padding: 12px 4px; }
+.tracking-empty-icon { width: 32px; height: 32px; flex-basis: 32px; font-size: 17px; }
+.tracking-empty-result strong { font-size: 14px; }
+.tracking-empty-result p { font-size: 12px; line-height: 1.5; }
+
+@media (max-width: 1020px) {
+    .tracking-page-grid { gap: 13px; padding: 17px 14px 20px; }
+    .tracking-page-intro { min-height: 245px; padding: 22px; }
+    .tracking-page-intro h1 { max-width: 62%; font-size: clamp(37px, 4.7vw, 48px); }
+    .tracking-page-intro p { max-width: 62%; font-size: 16px; }
+    .tracking-page-hero-image { width: 70%; height: 102%; }
+    .tracking-detail-card { min-height: 0; }
+    .tracking-result-layout { grid-template-columns: 1fr; gap: 12px; }
+    .tracking-receipt-details { grid-template-columns: 1fr 1fr; padding-right: 0; }
+    .tracking-progress { padding: 12px 0 0; border-top: 1px solid #e2e5e9; border-left: 0; }
+}
+
+@media (max-width: 760px) {
+    .tracking-page-grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "intro" "search" "detail" "history"; gap: 12px; padding: 14px 12px 18px; }
+    .tracking-left-column, .tracking-right-column { display: contents; }
+    .tracking-page-intro { grid-area: intro; min-height: 255px; padding: 22px 20px; }
+    .tracking-page-intro h1, .tracking-page-intro p { max-width: 70%; }
+    .tracking-page-intro h1 { font-size: clamp(36px, 8vw, 46px); }
+    .tracking-page-intro p { margin-top: 10px; font-size: 15px; }
+    .tracking-page-hero-image { right: -7%; width: 76%; height: 95%; opacity: .72; }
+    .tracking-search-card { grid-area: search; }
+    .tracking-detail-card { grid-area: detail; }
+    .tracking-history-card { grid-area: history; }
+    .tracking-progress { overflow-x: auto; justify-content: flex-start; gap: 0; padding: 12px 2px 9px; }
+    .tracking-progress-step { flex: 0 0 66px; }
+    .tracking-progress-step small { font-size: 10px; }
+}
+
+@media (max-width: 480px) {
+    .tracking-page-grid { gap: 10px; padding: 10px 8px 15px; }
+    .tracking-page-intro { min-height: 235px; padding: 18px 15px; }
+    .tracking-page-intro h1, .tracking-page-intro p { max-width: 76%; }
+    .tracking-page-intro h1 { font-size: clamp(33px, 9vw, 39px); }
+    .tracking-page-intro p { font-size: 14px; }
+    .tracking-page-hero-image { right: -12%; width: 82%; height: 88%; opacity: .6; }
+    .tracking-search-card { padding: 15px 13px 13px; }
+    .tracking-search-card h2, .tracking-history-heading h2, .tracking-detail-card h2 { font-size: 17px; }
+    .tracking-search-card > p { font-size: 12px; }
+    .tracking-search-form .input-wrap input { font-size: 14px; }
+    .tracking-receipt-details { grid-template-columns: 1fr; gap: 8px; }
+    .tracking-receipt-details > div { grid-template-columns: minmax(112px, .8fr) minmax(0, 1.2fr); font-size: 12px; }
+    .tracking-history-item { min-height: 38px; }
+    .tracking-history-item time { font-size: 10px; }
+}
