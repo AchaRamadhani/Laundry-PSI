@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class CucianController extends Controller
 {
@@ -175,34 +176,58 @@ class CucianController extends Controller
 
     public function create(): View
     {
+        $paketAktif = PaketLaundry::query()
+            ->whereRaw('LOWER(status) = ?', ['aktif'])
+            ->orderBy('nama_paket')
+            ->get();
+
         return view('cucian.form', [
             'cucian' => null,
             'pelanggan' => Pelanggan::query()->orderBy('nama_pelanggan')->get(),
-            'paketLaundry' => PaketLaundry::query()
-                ->whereRaw('LOWER(status) = ?', ['aktif'])
-                ->orderBy('nama_paket')
-                ->get(),
+            'paketLaundry' => $paketAktif,
+            'layananOptions' => LaundryOptions::SERVICES,
+            'paketPerLayanan' => $this->paketPerLayanan($paketAktif),
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validatedData($request);
+        $validated = $this->validatedDataCucianBaru($request);
+        $paket = $this->paketPerLayanan(PaketLaundry::query()
+            ->whereRaw('LOWER(status) = ?', ['aktif'])
+            ->get())[$validated['layanan']] ?? null;
 
-        DB::transaction(function () use ($validated) {
+        if (! $paket) {
+            $namaLayanan = LaundryOptions::SERVICES[$validated['layanan']]['nama'];
+
+            return back()
+                ->withErrors(['layanan' => "Paket aktif untuk layanan {$namaLayanan} belum tersedia. Tambahkan paket tersebut di menu Paket Laundry terlebih dahulu."])
+                ->withInput();
+        }
+
+        $transaksi = DB::transaction(function () use ($validated, $paket) {
+            $pelanggan = Pelanggan::updateOrCreate(
+                ['no_telp' => $validated['no_telp']],
+                ['nama_pelanggan' => $validated['nama_pelanggan']],
+            );
+
             $transaksi = Transaksi::create([
                 'no_nota' => $this->nomorNota($validated['tanggal_masuk']),
-                'pelanggan_id' => $validated['pelanggan_id'],
+                'pelanggan_id' => $pelanggan->id,
                 'id_admin' => auth()->id(),
                 'tanggal_masuk' => $validated['tanggal_masuk'],
-                'estimasi_selesai' => $validated['estimasi_selesai'] ?? null,
-                'total_harga' => 0,
+                'estimasi_selesai' => $validated['estimasi_selesai'],
+                'total_harga' => $validated['total_harga'],
                 'status_cucian' => 'antrean',
                 'catatan' => $validated['catatan'] ?? null,
             ]);
 
-            $total = $this->simpanDetail($transaksi, $validated);
-            $transaksi->update(['total_harga' => $total]);
+            DetailTransaksi::create([
+                'no_nota' => $transaksi->no_nota,
+                'paket_laundry_id' => $paket->id,
+                'berat_qty' => $validated['berat_qty'],
+                'subtotal' => $validated['total_harga'],
+            ]);
 
             StatusLaundry::create([
                 'no_nota' => $transaksi->no_nota,
@@ -211,9 +236,14 @@ class CucianController extends Controller
                 'catatan_status' => 'Data cucian baru ditambahkan.',
                 'waktu_status' => now(),
             ]);
+
+            return $transaksi;
         });
 
-        return redirect()->route('cucian.index')->with('success', 'Data cucian berhasil ditambahkan.');
+        return redirect()
+            ->route('cucian.index')
+            ->with('success', 'Data cucian berhasil ditambahkan.')
+            ->with('nota', $transaksi->no_nota);
     }
 
     public function show(Transaksi $cucian): View
@@ -295,6 +325,74 @@ class CucianController extends Controller
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    private function validatedDataCucianBaru(Request $request): array
+    {
+        $noTelp = preg_replace('/\D+/', '', (string) $request->input('no_telp', '')) ?? '';
+        $totalHarga = preg_replace('/\D+/', '', (string) $request->input('total_harga', '')) ?? '';
+        $request->merge([
+            'no_telp' => $noTelp,
+            'total_harga' => $totalHarga,
+        ]);
+
+        $layanan = (string) $request->input('layanan', '');
+        $unitLayanan = LaundryOptions::SERVICES[$layanan]['unit'] ?? 'kg';
+        $aturanJumlah = $unitLayanan === 'kg'
+            ? ['required', 'numeric', 'min:3', 'max:99999']
+            : ['required', 'integer', 'min:1', 'max:99999'];
+
+        return $request->validate([
+            'nama_pelanggan' => ['required', 'string', 'max:255'],
+            'no_telp' => ['required', 'digits_between:10,13'],
+            'layanan' => ['required', Rule::in(array_keys(LaundryOptions::SERVICES))],
+            'berat_qty' => $aturanJumlah,
+            'tanggal_masuk' => ['required', 'date'],
+            'estimasi_selesai' => ['required', 'date', 'after_or_equal:tanggal_masuk'],
+            'total_harga' => ['required', 'integer', 'min:1', 'max:9999999999'],
+            'catatan' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'nama_pelanggan.required' => 'Nama pelanggan wajib diisi.',
+            'no_telp.required' => 'Nomor telepon wajib diisi.',
+            'no_telp.digits_between' => 'Nomor telepon harus berisi 10 sampai 13 angka.',
+            'layanan.required' => 'Pilih jenis layanan terlebih dahulu.',
+            'layanan.in' => 'Jenis layanan yang dipilih tidak tersedia.',
+            'berat_qty.min' => $unitLayanan === 'kg'
+                ? 'Berat cucian minimal 3 kg.'
+                : 'Jumlah minimal 1 pcs.',
+            'estimasi_selesai.required' => 'Tanggal estimasi selesai wajib diisi.',
+            'estimasi_selesai.after_or_equal' => 'Estimasi selesai tidak boleh sebelum tanggal masuk.',
+            'total_harga.required' => 'Total harga wajib diisi.',
+            'total_harga.integer' => 'Total harga harus berupa angka rupiah tanpa desimal.',
+            'total_harga.min' => 'Total harga harus lebih besar dari nol.',
+        ]);
+    }
+
+    /**
+     * Cocokkan layanan Figma dengan paket aktif berdasarkan nama atau alias.
+     *
+     * @param  Collection<int, PaketLaundry>  $paketAktif
+     * @return array<string, PaketLaundry|null>
+     */
+    private function paketPerLayanan(Collection $paketAktif): array
+    {
+        $hasil = [];
+
+        foreach (LaundryOptions::SERVICES as $key => $layanan) {
+            $namaYangCocok = LaundryOptions::serviceNamesForFilter($key);
+            $hasil[$key] = $paketAktif->first(
+                static fn (PaketLaundry $paket): bool => in_array(
+                    strtolower(trim($paket->nama_paket)),
+                    $namaYangCocok,
+                    true,
+                )
+            );
+        }
+
+        return $hasil;
+    }
+
+    /**
      * @param  array<string, mixed>  $validated
      */
     private function simpanDetail(Transaksi $transaksi, array $validated): float
@@ -324,7 +422,7 @@ class CucianController extends Controller
 
     private function nomorNota(string $tanggalMasuk): string
     {
-        $prefix = 'GL-'.Carbon::parse($tanggalMasuk)->format('ymd').'-';
+        $prefix = 'GL-'.Carbon::parse($tanggalMasuk)->format('dmy').'-';
         // Ambil akhiran nota sebagai nomor urut untuk tanggal masuk yang dipilih.
         $terakhir = Transaksi::query()
             ->where('no_nota', 'like', $prefix.'%')

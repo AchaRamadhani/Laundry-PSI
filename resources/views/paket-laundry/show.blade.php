@@ -1,6 +1,9 @@
 <x-layouts::app :title="'Detail Paket Laundry'">
     @php
-        $unitHarga = str_contains(strtolower($paket->kategori), 'satuan') ? 'pcs' : 'kg';
+        $kategoriKey = strtolower($paket->kategori);
+        $namaPaketKey = strtolower($paket->nama_paket);
+        $unitHarga = str_contains($kategoriKey, 'satuan') || $namaPaketKey === 'treatment' ? 'pcs' : '3 kg';
+        $unitJumlah = str_contains($kategoriKey, 'satuan') || in_array($namaPaketKey, ['satuan', 'treatment'], true) ? 'pcs' : 'kg';
         $aktif = strtolower($paket->status) === 'aktif';
     @endphp
     <div class="paket-page paket-detail-page">
@@ -22,7 +25,7 @@
                     <table class="paket-usage-table"><thead><tr><th>No. Nota</th><th>Pelanggan</th><th>Berat/Qty</th><th>Subtotal</th><th>Tanggal</th></tr></thead>
                         <tbody>
                             @forelse ($paket->detailTransaksi as $detail)
-                                <tr><td>{{ $detail->no_nota }}</td><td>{{ $detail->transaksi?->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td><td>{{ number_format((float) $detail->berat_qty, 2, ',', '.') }} {{ $unitHarga === 'kg' ? 'kg' : ($unitHarga === 'pcs' ? 'pcs' : 'layanan') }}</td><td>Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}</td><td>{{ $detail->created_at?->format('d M Y') ?? '—' }}</td></tr>
+                                <tr><td>{{ $detail->no_nota }}</td><td>{{ $detail->transaksi?->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td><td>{{ number_format((float) $detail->berat_qty, 2, ',', '.') }} {{ $unitJumlah }}</td><td>Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}</td><td>{{ $detail->created_at?->format('d M Y') ?? '—' }}</td></tr>
                             @empty
                                 <tr><td colspan="5" class="cucian-empty">Paket ini belum digunakan dalam transaksi.</td></tr>
                             @endforelse

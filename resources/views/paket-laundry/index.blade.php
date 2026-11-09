@@ -41,7 +41,8 @@
                     @forelse ($paketLaundry as $paket)
                         @php
                             $kategoriKey = strtolower($paket->kategori);
-                            $unitHarga = str_contains($kategoriKey, 'satuan') ? 'pcs' : 'kg';
+                        $namaPaketKey = strtolower($paket->nama_paket);
+                        $unitHarga = str_contains($kategoriKey, 'satuan') || $namaPaketKey === 'treatment' ? 'pcs' : '3 kg';
                             $iconTone = str_contains(strtolower($paket->nama_paket), 'setrika') ? 'orange' : (str_contains(strtolower($paket->nama_paket), 'bayi') ? 'pink' : (str_contains(strtolower($paket->nama_paket), 'express') ? 'blue' : (str_contains($kategoriKey, 'khusus') ? 'purple' : 'blue')));
                             $isActive = strtolower($paket->status) === 'aktif';
                         @endphp

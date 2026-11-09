@@ -22,6 +22,7 @@ final class LaundryOptions
         'cuci-kering' => [
             'nama' => 'Cuci Kering',
             'kategori' => 'kiloan',
+            'unit' => 'kg',
             'icon' => 'washer',
             'deskripsi' => 'Pakaian dicuci bersih menggunakan detergen berkualitas.',
             'aliases' => [],
@@ -29,6 +30,7 @@ final class LaundryOptions
         'cuci-lipat' => [
             'nama' => 'Cuci Lipat',
             'kategori' => 'kiloan',
+            'unit' => 'kg',
             'icon' => 'fold',
             'deskripsi' => 'Cucian bersih dan wangi, kemudian dilipat dengan rapi.',
             'aliases' => [],
@@ -36,6 +38,7 @@ final class LaundryOptions
         'cuci-setrika-lipat' => [
             'nama' => 'Cuci Setrika Lipat',
             'kategori' => 'kiloan',
+            'unit' => 'kg',
             'icon' => 'shirt',
             'deskripsi' => 'Cuci bersih, disetrika, dan dilipat agar siap disimpan.',
             'aliases' => [],
@@ -43,6 +46,7 @@ final class LaundryOptions
         'setrika' => [
             'nama' => 'Setrika',
             'kategori' => 'kiloan',
+            'unit' => 'kg',
             'icon' => 'iron',
             'deskripsi' => 'Pakaian disetrika rapi sesuai jenis kain.',
             'aliases' => ['setrika saja'],
@@ -50,6 +54,7 @@ final class LaundryOptions
         'pengering-lipat' => [
             'nama' => 'Pengering & Lipat',
             'kategori' => 'kiloan',
+            'unit' => 'kg',
             'icon' => 'dryer',
             'deskripsi' => 'Pakaian dikeringkan lalu dilipat dengan rapi.',
             'aliases' => ['pengering dan lipat'],
@@ -57,6 +62,7 @@ final class LaundryOptions
         'baju-bayi' => [
             'nama' => 'Baju Bayi',
             'kategori' => 'kiloan',
+            'unit' => 'kg',
             'icon' => 'baby',
             'deskripsi' => 'Perawatan lembut untuk pakaian bayi.',
             'aliases' => [],
@@ -64,6 +70,7 @@ final class LaundryOptions
         'satuan' => [
             'nama' => 'Satuan',
             'kategori' => 'non-kiloan',
+            'unit' => 'pcs',
             'icon' => 'hanger',
             'deskripsi' => 'Layanan pencucian dihitung per potong atau per pcs.',
             'aliases' => [],
@@ -71,6 +78,7 @@ final class LaundryOptions
         'express' => [
             'nama' => 'Express',
             'kategori' => 'non-kiloan',
+            'unit' => 'kg',
             'icon' => 'express',
             'deskripsi' => 'Pengerjaan lebih cepat untuk kebutuhan mendesak.',
             'aliases' => [],
@@ -78,6 +86,7 @@ final class LaundryOptions
         'treatment' => [
             'nama' => 'Treatment',
             'kategori' => 'non-kiloan',
+            'unit' => 'pcs',
             'icon' => 'treatment',
             'deskripsi' => 'Perawatan khusus sesuai kebutuhan cucian Anda.',
             'aliases' => [],
