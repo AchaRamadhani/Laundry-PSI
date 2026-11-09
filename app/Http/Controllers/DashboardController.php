@@ -124,12 +124,18 @@ class DashboardController extends Controller
         $totalStatus = $dataStatus->sum('jumlah');
 
         // Grafik pendapatan harian, termasuk tanggal dengan pendapatan nol
+        $driver = DB::connection()->getDriverName();
+
+        $hariExpression = $driver === 'sqlite'
+            ? "CAST(strftime('%d', tanggal_masuk) AS INTEGER)"
+            : 'DAY(tanggal_masuk)';
+
         $pendapatanDatabase = (clone $transaksiBulan)
             ->select(
-                DB::raw('DAY(tanggal_masuk) as hari'),
+                DB::raw("$hariExpression as hari"),
                 DB::raw('SUM(total_harga) as pendapatan')
             )
-            ->groupBy(DB::raw('DAY(tanggal_masuk)'))
+            ->groupBy(DB::raw($hariExpression))
             ->orderBy('hari')
             ->get()
             ->keyBy('hari');
