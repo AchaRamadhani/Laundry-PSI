@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaksi;
 use App\Support\LaundryOptions;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,7 @@ class TransaksiController extends Controller
         'selesai' => '#7552e8', 'diambil' => '#55b85f',
     ];
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan] = $this->periode($request);
         $periode = Transaksi::query()->whereBetween('tanggal_masuk', [
@@ -50,19 +51,36 @@ class TransaksiController extends Controller
             ->groupBy(DB::raw('LOWER(status_cucian)'))
             ->orderBy('status_key')
             ->get()
-            ->map(function ($item) {
-                $item->label = self::STATUS_LABELS[$item->status_key]
-                    ?? ucfirst(str_replace('_', ' ', $item->status_key));
-                $item->warna = self::STATUS_COLORS[$item->status_key] ?? '#9aa4b4';
+            ->map(function (Transaksi $item) {
+                $statusKey = (string) $item->getAttribute('status_key');
+
+                $item->setAttribute(
+                    'label',
+                    self::STATUS_LABELS[$statusKey]
+                        ?? ucfirst(str_replace('_', ' ', $statusKey))
+                );
+
+                $item->setAttribute(
+                    'warna',
+                    self::STATUS_COLORS[$statusKey] ?? '#9aa4b4'
+                );
 
                 return $item;
             });
-        $totalStatus = $statusRingkasan->sum('jumlah');
+
+        $totalStatus = (float) $statusRingkasan->sum('jumlah');
         $sudut = 0;
+
         foreach ($statusRingkasan as $item) {
-            $item->mulai = $sudut;
-            $sudut += $totalStatus ? ($item->jumlah / $totalStatus) * 360 : 0;
-            $item->akhir = $sudut;
+            $jumlah = (float) $item->getAttribute('jumlah');
+
+            $item->setAttribute('mulai', $sudut);
+
+            $sudut += $totalStatus > 0
+                ? ($jumlah / $totalStatus) * 360
+                : 0;
+
+            $item->setAttribute('akhir', $sudut);
         }
 
         $search = trim((string) $request->query('search', ''));
@@ -86,7 +104,7 @@ class TransaksiController extends Controller
         ));
     }
 
-    public function cetak(Request $request)
+    public function cetak(Request $request): View
     {
         [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan] = $this->periode($request);
         $transaksi = $this->queryTerfilter($request, $awalBulan, $akhirBulan)
@@ -103,7 +121,7 @@ class TransaksiController extends Controller
         ]);
     }
 
-    public function aktivitas()
+    public function aktivitas(): View
     {
         $transaksi = Transaksi::query()
             ->with('pelanggan')
@@ -113,6 +131,15 @@ class TransaksiController extends Controller
         return view('transaksi.aktivitas', compact('transaksi'));
     }
 
+    /**
+     * @return array{
+     *     0: int,
+     *     1: int,
+     *     2: Carbon,
+     *     3: Carbon,
+     *     4: array<int, string>
+     * }
+     */
     private function periode(Request $request): array
     {
         $input = (string) $request->query('periode', '');
@@ -137,6 +164,9 @@ class TransaksiController extends Controller
         return [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan];
     }
 
+    /**
+     * @return Builder<Transaksi>
+     */
     private function queryTerfilter(Request $request, Carbon $awalBulan, Carbon $akhirBulan): Builder
     {
         $query = Transaksi::query()

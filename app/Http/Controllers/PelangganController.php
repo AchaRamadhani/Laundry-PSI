@@ -6,14 +6,17 @@ use App\Models\Pelanggan;
 use App\Models\Transaksi;
 use App\Support\LaundryOptions;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PelangganController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan] = $this->periode($request);
         $paketId = $request->query('layanan');
@@ -89,12 +92,12 @@ class PelangganController extends Controller
         ));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('pelanggan.form', ['pelanggan' => null]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'nama_pelanggan' => ['required', 'string', 'max:255'],
@@ -112,7 +115,7 @@ class PelangganController extends Controller
             ->with('success', 'Data pelanggan berhasil ditambahkan.');
     }
 
-    public function show(Pelanggan $pelanggan)
+    public function show(Pelanggan $pelanggan): View
     {
         $jumlahTransaksi = $pelanggan->transaksi()->count();
         $pelanggan->load(['transaksi' => fn ($query) => $query
@@ -123,12 +126,12 @@ class PelangganController extends Controller
         return view('pelanggan.show', compact('pelanggan', 'jumlahTransaksi'));
     }
 
-    public function edit(Pelanggan $pelanggan)
+    public function edit(Pelanggan $pelanggan): View
     {
         return view('pelanggan.form', compact('pelanggan'));
     }
 
-    public function update(Request $request, Pelanggan $pelanggan)
+    public function update(Request $request, Pelanggan $pelanggan): RedirectResponse
     {
         $validated = $request->validate([
             'nama_pelanggan' => ['required', 'string', 'max:255'],
@@ -150,7 +153,7 @@ class PelangganController extends Controller
             ->with('success', 'Data pelanggan berhasil diperbarui.');
     }
 
-    public function destroy(Pelanggan $pelanggan)
+    public function destroy(Pelanggan $pelanggan): RedirectResponse
     {
         if ($pelanggan->transaksi()->exists()) {
             return redirect()->route('pelanggan.index')
@@ -163,7 +166,7 @@ class PelangganController extends Controller
             ->with('success', 'Data pelanggan berhasil dihapus.');
     }
 
-    public function aktivitas()
+    public function aktivitas(): View
     {
         $aktivitas = Transaksi::query()
             ->with(['pelanggan', 'detailTransaksi.paketLaundry'])
@@ -173,6 +176,15 @@ class PelangganController extends Controller
         return view('pelanggan.aktivitas', compact('aktivitas'));
     }
 
+    /**
+     * @return array{
+     *     0: int,
+     *     1: int,
+     *     2: Carbon,
+     *     3: Carbon,
+     *     4: array<int, string>
+     * }
+     */
     private function periode(Request $request): array
     {
         $input = (string) $request->query('periode', '');
@@ -197,19 +209,24 @@ class PelangganController extends Controller
         return [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan];
     }
 
-    private function aktivitasTerbaru()
+    /**
+     * @return EloquentCollection<int, Transaksi>
+     */
+    private function aktivitasTerbaru(): EloquentCollection
     {
         return Transaksi::query()
             ->with('pelanggan')
             ->orderByDesc('created_at')
             ->limit(5)
             ->get()
-            ->map(function ($transaksi) {
-                $transaksi->aktivitas = match (strtolower($transaksi->status_cucian)) {
+            ->map(function (Transaksi $transaksi): Transaksi {
+                $aktivitas = match (strtolower($transaksi->status_cucian)) {
                     'selesai' => 'Pesanan selesai',
                     'diambil' => 'Cucian telah diambil',
                     default => 'Transaksi cucian dibuat',
                 };
+
+                $transaksi->setAttribute('aktivitas', $aktivitas);
 
                 return $transaksi;
             });

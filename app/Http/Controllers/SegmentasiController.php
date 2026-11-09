@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -17,7 +19,7 @@ class SegmentasiController extends Controller
 
     private const FREQUENCY_WINDOW_DAYS = 90;
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $hariIni = Carbon::today();
         $batas90Hari = $hariIni->copy()->subDays(self::FREQUENCY_WINDOW_DAYS)->toDateString();
@@ -82,22 +84,28 @@ class SegmentasiController extends Controller
             ->withQueryString();
 
         $pelanggan->getCollection()->transform(function (Pelanggan $item) use ($batas30Hari, $batas60Hari) {
-            $terakhir = $item->transaksi_terakhir
-                ? Carbon::parse($item->transaksi_terakhir)->toDateString()
+            $transaksiTerakhir = $item->getAttribute('transaksi_terakhir');
+            $transaksi90Hari = (int) $item->getAttribute('transaksi_90_hari');
+
+            $terakhir = $transaksiTerakhir
+                ? Carbon::parse($transaksiTerakhir)->toDateString()
                 : null;
 
-            if ($item->transaksi_90_hari >= self::LOYAL_MIN_TRANSACTIONS && $terakhir && $terakhir >= $batas30Hari) {
-                $item->segment_key = 'loyal';
-                $item->segment_label = 'Loyal';
+            if ($transaksi90Hari >= self::LOYAL_MIN_TRANSACTIONS && $terakhir && $terakhir >= $batas30Hari) {
+                $item->setAttribute('segment_key', 'loyal');
+                $item->setAttribute('segment_label', 'Loyal');
             } elseif ($terakhir && $terakhir >= $batas60Hari) {
-                $item->segment_key = 'potensial';
-                $item->segment_label = 'Potensial';
+                $item->setAttribute('segment_key', 'potensial');
+                $item->setAttribute('segment_label', 'Potensial');
             } else {
-                $item->segment_key = 'kurang-aktif';
-                $item->segment_label = 'Kurang Aktif';
+                $item->setAttribute('segment_key', 'kurang-aktif');
+                $item->setAttribute('segment_label', 'Kurang Aktif');
             }
 
-            $item->lama_menjadi_pelanggan = $this->lamaMenjadiPelanggan($item->created_at);
+            $item->setAttribute(
+                'lama_menjadi_pelanggan',
+                $this->lamaMenjadiPelanggan($item->created_at)
+            );
 
             return $item;
         });
@@ -108,6 +116,9 @@ class SegmentasiController extends Controller
         ));
     }
 
+    /**
+     * @return Builder<Pelanggan>
+     */
     private function pelangganLoyalQuery(string $batas90Hari, string $batas30Hari, string $akhirHariIni): Builder
     {
         return Pelanggan::query()
@@ -119,7 +130,7 @@ class SegmentasiController extends Controller
             });
     }
 
-    private function lamaMenjadiPelanggan(?Carbon $tanggalDaftar): string
+    private function lamaMenjadiPelanggan(?CarbonInterface $tanggalDaftar): string
     {
         if (! $tanggalDaftar) {
             return '—';

@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -48,7 +49,7 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
-     * Get the user's initials
+     * Get the user's initials.
      */
     public function initials(): string
     {
@@ -59,12 +60,18 @@ class User extends Authenticatable implements PasskeyUser
             : $initials;
     }
 
-    public function transaksi()
+    /**
+     * @return HasMany<Transaksi, $this>
+     */
+    public function transaksi(): HasMany
     {
         return $this->hasMany(Transaksi::class, 'id_admin');
     }
 
-    public function statusLaundry()
+    /**
+     * @return HasMany<StatusLaundry, $this>
+     */
+    public function statusLaundry(): HasMany
     {
         return $this->hasMany(StatusLaundry::class, 'id_admin');
     }

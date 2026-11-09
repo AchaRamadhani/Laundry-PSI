@@ -7,6 +7,7 @@ use App\Models\Transaksi;
 use App\Support\OperationalHours;
 use App\Support\WhatsAppContact;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class TrackingController extends Controller
@@ -31,7 +32,7 @@ class TrackingController extends Controller
         'picked up' => 'diambil',
     ];
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $validated = $request->validate([
             'token_tracking' => ['nullable', 'string', 'max:12'],
@@ -56,13 +57,16 @@ class TrackingController extends Controller
         $currentIndex = $currentIndex === false ? -1 : $currentIndex;
         $historyByStage = [];
 
-        foreach ($transaksi?->statusLaundry ?? [] as $entry) {
-            $key = $this->normalizeStatus($entry->status);
+        if ($transaksi !== null) {
+            foreach ($transaksi->statusLaundry as $entry) {
+                $key = $this->normalizeStatus($entry->status);
 
-            if (isset(self::STAGES[$key])) {
-                $historyByStage[$key] = Carbon::parse($entry->waktu_status)
-                    ->locale('id')
-                    ->translatedFormat('d M Y, H.i');
+                if (isset(self::STAGES[$key])) {
+                    $tanggal = Carbon::parse($entry->waktu_status);
+                    $tanggal->locale('id');
+
+                    $historyByStage[$key] = $tanggal->translatedFormat('d M Y, H.i');
+                }
             }
         }
 

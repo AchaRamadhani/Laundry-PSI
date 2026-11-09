@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\LaundrySetting;
 use App\Support\OperationalHours;
 use App\Support\WhatsAppContact;
+use Illuminate\Contracts\View\View;
 
 class KontakController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $settings = LaundrySetting::query()->first();
         $whatsappData = WhatsAppContact::forAdmin($settings);

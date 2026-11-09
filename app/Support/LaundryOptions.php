@@ -84,6 +84,11 @@ final class LaundryOptions
         ],
     ];
 
+    /**
+     * Mengambil daftar nama layanan untuk filter.
+     *
+     * @return list<string>
+     */
     public static function serviceNamesForFilter(?string $key): array
     {
         $service = self::SERVICES[$key ?? ''] ?? null;
