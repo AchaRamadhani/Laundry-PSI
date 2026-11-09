@@ -9,7 +9,10 @@ use App\Models\StatusLaundry;
 use App\Models\Transaksi;
 use App\Support\LaundryOptions;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CucianController extends Controller
@@ -40,7 +43,7 @@ class CucianController extends Controller
         'diambil' => 'Diambil',
     ];
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $periodeInput = (string) $request->query('periode', '');
         if (preg_match('/^(\d{4})-(\d{2})$/', $periodeInput, $periodeMatch)) {
@@ -82,20 +85,36 @@ class CucianController extends Controller
             ->groupBy(DB::raw('LOWER(status_cucian)'))
             ->orderBy('status_key')
             ->get()
-            ->map(function ($item) {
-                $item->label = self::STATUS_LABELS[$item->status_key]
-                    ?? ucfirst(str_replace('_', ' ', $item->status_key));
-                $item->warna = self::STATUS_COLORS[$item->status_key] ?? '#9aa4b4';
+            ->map(function (Transaksi $item) {
+                $statusKey = (string) $item->getAttribute('status_key');
+
+                $item->setAttribute(
+                    'label',
+                    self::STATUS_LABELS[$statusKey]
+                        ?? ucfirst(str_replace('_', ' ', $statusKey))
+                );
+
+                $item->setAttribute(
+                    'warna',
+                    self::STATUS_COLORS[$statusKey] ?? '#9aa4b4'
+                );
 
                 return $item;
             });
 
-        $totalStatus = $statusRingkasan->sum('jumlah');
+        $totalStatus = (float) $statusRingkasan->sum('jumlah');
         $sudut = 0;
+
         foreach ($statusRingkasan as $item) {
-            $item->mulai = $sudut;
-            $sudut += $totalStatus ? ($item->jumlah / $totalStatus) * 360 : 0;
-            $item->akhir = $sudut;
+            $jumlah = (float) $item->getAttribute('jumlah');
+
+            $item->setAttribute('mulai', $sudut);
+
+            $sudut += $totalStatus > 0
+                ? ($jumlah / $totalStatus) * 360
+                : 0;
+
+            $item->setAttribute('akhir', $sudut);
         }
 
         $query = (clone $periode)->with([
@@ -154,7 +173,7 @@ class CucianController extends Controller
         ));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('cucian.form', [
             'cucian' => null,
@@ -166,7 +185,7 @@ class CucianController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $this->validatedData($request);
 
@@ -197,14 +216,14 @@ class CucianController extends Controller
         return redirect()->route('cucian.index')->with('success', 'Data cucian berhasil ditambahkan.');
     }
 
-    public function show(Transaksi $cucian)
+    public function show(Transaksi $cucian): View
     {
         $cucian->load(['pelanggan', 'detailTransaksi.paketLaundry', 'statusLaundry.admin']);
 
         return view('cucian.show', compact('cucian'));
     }
 
-    public function edit(Transaksi $cucian)
+    public function edit(Transaksi $cucian): View
     {
         $cucian->load(['detailTransaksi.paketLaundry']);
         $paketTerpakai = $cucian->detailTransaksi->pluck('paket_laundry_id');
@@ -222,7 +241,7 @@ class CucianController extends Controller
         ]);
     }
 
-    public function update(Request $request, Transaksi $cucian)
+    public function update(Request $request, Transaksi $cucian): RedirectResponse
     {
         $validated = $this->validatedData($request);
 
@@ -242,13 +261,16 @@ class CucianController extends Controller
         return redirect()->route('cucian.index')->with('success', 'Data cucian berhasil diperbarui.');
     }
 
-    public function destroy(Transaksi $cucian)
+    public function destroy(Transaksi $cucian): RedirectResponse
     {
         $cucian->delete();
 
         return redirect()->route('cucian.index')->with('success', 'Data cucian berhasil dihapus.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validatedData(Request $request): array
     {
         $jumlahLayanan = count((array) $request->input('paket_laundry_id', []));
@@ -260,7 +282,7 @@ class CucianController extends Controller
             'catatan' => ['nullable', 'string', 'max:2000'],
             'paket_laundry_id' => ['required', 'array', 'min:1'],
             'paket_laundry_id.*' => ['required', 'integer', 'exists:paket_laundry,id'],
-            'berat_qty' => ['required', 'array', 'size:' . $jumlahLayanan],
+            'berat_qty' => ['required', 'array', 'size:'.$jumlahLayanan],
             'berat_qty.*' => ['required', 'numeric', 'gt:0'],
         ], [
             'pelanggan_id.required' => 'Pilih pelanggan terlebih dahulu.',
@@ -272,6 +294,9 @@ class CucianController extends Controller
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $validated
+     */
     private function simpanDetail(Transaksi $transaksi, array $validated): float
     {
         $paket = PaketLaundry::query()
@@ -299,23 +324,26 @@ class CucianController extends Controller
 
     private function nomorNota(string $tanggalMasuk): string
     {
-        $prefix = 'GL-' . Carbon::parse($tanggalMasuk)->format('ymd') . '-';
+        $prefix = 'GL-'.Carbon::parse($tanggalMasuk)->format('ymd').'-';
         // Ambil akhiran nota sebagai nomor urut untuk tanggal masuk yang dipilih.
         $terakhir = Transaksi::query()
-            ->where('no_nota', 'like', $prefix . '%')
+            ->where('no_nota', 'like', $prefix.'%')
             ->orderByDesc('no_nota')
             ->value('no_nota');
         $nomor = $terakhir ? (int) substr($terakhir, -3) + 1 : 1;
 
         do {
-            $nota = $prefix . str_pad((string) $nomor, 3, '0', STR_PAD_LEFT);
+            $nota = $prefix.str_pad((string) $nomor, 3, '0', STR_PAD_LEFT);
             $nomor++;
         } while (Transaksi::query()->whereKey($nota)->exists());
 
         return $nota;
     }
 
-    private function aktivitasTerbaru()
+    /**
+     * @return Collection<int, \stdClass>
+     */
+    private function aktivitasTerbaru(): Collection
     {
         $aktivitas = DB::table('status_laundry')
             ->join('transaksi', 'status_laundry.no_nota', '=', 'transaksi.no_nota')
@@ -354,14 +382,14 @@ class CucianController extends Controller
         }
 
         return $aktivitas->map(function ($item) {
-                $status = strtolower($item->status);
-                $item->label = in_array($status, ['antrean', 'antrian'], true)
-                    ? 'Data cucian baru ditambahkan'
-                    : 'Status cucian diperbarui';
-                $item->status_label = self::STATUS_LABELS[$status] ?? ucfirst($status);
-                $item->warna = self::STATUS_COLORS[$status] ?? '#4b91ed';
+            $status = strtolower($item->status);
+            $item->label = in_array($status, ['antrean', 'antrian'], true)
+                ? 'Data cucian baru ditambahkan'
+                : 'Status cucian diperbarui';
+            $item->status_label = self::STATUS_LABELS[$status] ?? ucfirst($status);
+            $item->warna = self::STATUS_COLORS[$status] ?? '#4b91ed';
 
-                return $item;
-            });
+            return $item;
+        });
     }
 }

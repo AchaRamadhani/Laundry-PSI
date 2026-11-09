@@ -1,18 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CucianController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KontakController;
+use App\Http\Controllers\LayananController;
+use App\Http\Controllers\PaketLaundryController;
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\SegmentasiController;
+use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UpdateStatusController;
-use App\Http\Controllers\PelangganController;
-use App\Http\Controllers\PaketLaundryController;
-use App\Http\Controllers\SegmentasiController;
-use App\Http\Controllers\PengaturanController;
-use App\Http\Controllers\TrackingController;
-use App\Http\Controllers\LayananController;
-use App\Http\Controllers\KontakController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking');

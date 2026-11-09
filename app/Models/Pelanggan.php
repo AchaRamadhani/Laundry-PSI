@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pelanggan extends Model
 {
@@ -13,7 +14,10 @@ class Pelanggan extends Model
         'no_telp',
     ];
 
-    public function transaksi()
+    /**
+     * @return HasMany<Transaksi, $this>
+     */
+    public function transaksi(): HasMany
     {
         return $this->hasMany(
             Transaksi::class,

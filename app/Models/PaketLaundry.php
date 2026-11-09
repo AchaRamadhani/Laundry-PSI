@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PaketLaundry extends Model
 {
@@ -17,7 +18,12 @@ class PaketLaundry extends Model
         'status',
     ];
 
-    public function detailTransaksi()
+    /**
+     * Relasi paket laundry dengan detail transaksi.
+     *
+     * @return HasMany<DetailTransaksi, $this>
+     */
+    public function detailTransaksi(): HasMany
     {
         return $this->hasMany(
             DetailTransaksi::class,

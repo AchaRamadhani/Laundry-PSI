@@ -6,8 +6,11 @@ use App\Models\StatusLaundry;
 use App\Models\Transaksi;
 use App\Support\LaundryOptions;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -33,7 +36,7 @@ class UpdateStatusController extends Controller
         'diambil' => '#19a879',
     ];
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan] = $this->periode($request);
         $periode = Transaksi::query()->whereBetween('tanggal_masuk', [
@@ -139,7 +142,7 @@ class UpdateStatusController extends Controller
         ));
     }
 
-    public function update(Request $request, Transaksi $transaksi)
+    public function update(Request $request, Transaksi $transaksi): RedirectResponse
     {
         $validated = $request->validate([
             'status_baru' => ['required', Rule::in(array_keys(self::STEPS))],
@@ -168,7 +171,7 @@ class UpdateStatusController extends Controller
                 'no_nota' => $transaksi->no_nota,
                 'id_admin' => auth()->id(),
                 'status' => $statusBaru,
-                'catatan_status' => $catatan !== '' ? $catatan : 'Status diperbarui menjadi ' . self::STEPS[$statusBaru] . '.',
+                'catatan_status' => $catatan !== '' ? $catatan : 'Status diperbarui menjadi '.self::STEPS[$statusBaru].'.',
                 'waktu_status' => now(),
             ]);
         });
@@ -181,7 +184,7 @@ class UpdateStatusController extends Controller
         ))->with('success', 'Status cucian berhasil diperbarui dan riwayatnya disimpan.');
     }
 
-    public function riwayat()
+    public function riwayat(): View
     {
         $riwayat = StatusLaundry::query()
             ->with(['transaksi.pelanggan', 'admin'])
@@ -191,6 +194,9 @@ class UpdateStatusController extends Controller
         return view('update-status.history', compact('riwayat'));
     }
 
+    /**
+     * @return array{0: int, 1: int, 2: Carbon, 3: Carbon, 4: array<int, string>}
+     */
     private function periode(Request $request): array
     {
         $input = (string) $request->query('periode', '');
@@ -225,7 +231,10 @@ class UpdateStatusController extends Controller
         };
     }
 
-    private function riwayatTerbaru()
+    /**
+     * @return Collection<int, mixed>
+     */
+    private function riwayatTerbaru(): Collection
     {
         $riwayat = DB::table('status_laundry')
             ->join('transaksi', 'status_laundry.no_nota', '=', 'transaksi.no_nota')
@@ -250,7 +259,7 @@ class UpdateStatusController extends Controller
                 'status' => $item->status_cucian,
                 'catatan_status' => 'Nota dibuat bersama data cucian.',
                 'waktu_status' => $item->created_at,
-                'nama_pelanggan' => $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus',
+                'nama_pelanggan' => $item->pelanggan->nama_pelanggan ?? 'Pelanggan dihapus',
                 'admin_name' => 'Admin',
             ]);
     }

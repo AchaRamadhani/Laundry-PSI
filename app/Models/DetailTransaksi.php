@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DetailTransaksi extends Model
 {
@@ -15,7 +16,12 @@ class DetailTransaksi extends Model
         'subtotal',
     ];
 
-    public function transaksi()
+    /**
+     * Relasi detail transaksi ke transaksi utama.
+     *
+     * @return BelongsTo<Transaksi, $this>
+     */
+    public function transaksi(): BelongsTo
     {
         return $this->belongsTo(
             Transaksi::class,
@@ -24,7 +30,12 @@ class DetailTransaksi extends Model
         );
     }
 
-    public function paketLaundry()
+    /**
+     * Relasi detail transaksi ke paket laundry.
+     *
+     * @return BelongsTo<PaketLaundry, $this>
+     */
+    public function paketLaundry(): BelongsTo
     {
         return $this->belongsTo(
             PaketLaundry::class,

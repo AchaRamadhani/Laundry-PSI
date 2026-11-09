@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Support\LaundryOptions;
+use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $bulan = (int) $request->input('bulan', now()->month);
         $tahun = (int) $request->input('tahun', now()->year);
@@ -44,7 +45,7 @@ class DashboardController extends Controller
         $transaksiBulan = DB::table('transaksi')
             ->whereBetween('tanggal_masuk', [
                 $awalBulan->toDateString(),
-                $akhirBulan->toDateString()
+                $akhirBulan->toDateString(),
             ]);
 
         // KPI
@@ -123,12 +124,18 @@ class DashboardController extends Controller
         $totalStatus = $dataStatus->sum('jumlah');
 
         // Grafik pendapatan harian, termasuk tanggal dengan pendapatan nol
+        $driver = DB::connection()->getDriverName();
+
+        $hariExpression = $driver === 'sqlite'
+            ? "CAST(strftime('%d', tanggal_masuk) AS INTEGER)"
+            : 'DAY(tanggal_masuk)';
+
         $pendapatanDatabase = (clone $transaksiBulan)
             ->select(
-                DB::raw('DAY(tanggal_masuk) as hari'),
+                DB::raw("$hariExpression as hari"),
                 DB::raw('SUM(total_harga) as pendapatan')
             )
-            ->groupBy(DB::raw('DAY(tanggal_masuk)'))
+            ->groupBy(DB::raw($hariExpression))
             ->orderBy('hari')
             ->get()
             ->keyBy('hari');
@@ -200,7 +207,7 @@ class DashboardController extends Controller
             )
             ->whereBetween('transaksi.tanggal_masuk', [
                 $awalBulan->toDateString(),
-                $akhirBulan->toDateString()
+                $akhirBulan->toDateString(),
             ])
             ->select(
                 'paket_laundry.nama_paket',

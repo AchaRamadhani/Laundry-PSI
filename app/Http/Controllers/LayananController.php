@@ -6,15 +6,16 @@ use App\Models\LaundrySetting;
 use App\Support\LaundryOptions;
 use App\Support\OperationalHours;
 use App\Support\WhatsAppContact;
+use Illuminate\Contracts\View\View;
 
 class LayananController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $settings = LaundrySetting::query()->first();
         $whatsappData = WhatsAppContact::forAdmin($settings);
         $operationalData = OperationalHours::forSettings($settings);
-        $services = array_values(LaundryOptions::SERVICES);
+        $services = LaundryOptions::SERVICES;
 
         return view('layanan.index', array_merge([
             'layananKiloan' => array_values(array_filter($services, fn ($service) => $service['kategori'] === 'kiloan')),

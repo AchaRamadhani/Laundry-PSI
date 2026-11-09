@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Transaksi extends Model
@@ -30,7 +32,7 @@ class Transaksi extends Model
     {
         static::creating(function (Transaksi $transaksi): void {
             if (blank($transaksi->tracking_token)) {
-                $transaksi->tracking_token = static::generateTrackingToken();
+                $transaksi->tracking_token = self::generateTrackingToken();
             }
         });
     }
@@ -39,17 +41,23 @@ class Transaksi extends Model
     {
         do {
             $token = Str::upper(Str::random(12));
-        } while (static::query()->where('tracking_token', $token)->exists());
+        } while (self::query()->where('tracking_token', $token)->exists());
 
         return $token;
     }
 
-    public function pelanggan()
+    /**
+     * @return BelongsTo<Pelanggan, $this>
+     */
+    public function pelanggan(): BelongsTo
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id');
     }
 
-    public function detailTransaksi()
+    /**
+     * @return HasMany<DetailTransaksi, $this>
+     */
+    public function detailTransaksi(): HasMany
     {
         return $this->hasMany(
             DetailTransaksi::class,
@@ -58,7 +66,10 @@ class Transaksi extends Model
         );
     }
 
-    public function statusLaundry()
+    /**
+     * @return HasMany<StatusLaundry, $this>
+     */
+    public function statusLaundry(): HasMany
     {
         return $this->hasMany(
             StatusLaundry::class,
@@ -67,7 +78,10 @@ class Transaksi extends Model
         );
     }
 
-    public function admin()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_admin');
     }

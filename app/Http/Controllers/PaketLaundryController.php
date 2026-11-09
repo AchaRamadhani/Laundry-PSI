@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaketLaundry;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PaketLaundryController extends Controller
 {
     private const KATEGORI_DEFAULT = ['Kiloan', 'Khusus', 'Satuan'];
+
     private const STATUS_VALID = ['aktif', 'nonaktif'];
 
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $search = trim((string) $request->query('search', ''));
         $kategori = trim((string) $request->query('kategori', ''));
@@ -62,7 +66,7 @@ class PaketLaundryController extends Controller
         ));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('paket-laundry.form', [
             'paket' => null,
@@ -70,15 +74,15 @@ class PaketLaundryController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $paket = PaketLaundry::create($this->validatedData($request));
 
         return redirect()->route('paket-laundry.index')
-            ->with('success', 'Paket laundry ' . $paket->nama_paket . ' berhasil ditambahkan.');
+            ->with('success', 'Paket laundry '.$paket->nama_paket.' berhasil ditambahkan.');
     }
 
-    public function show(PaketLaundry $paket)
+    public function show(PaketLaundry $paket): View
     {
         $jumlahPenggunaan = DB::table('detail_transaksi')
             ->where('paket_laundry_id', $paket->id)
@@ -92,7 +96,7 @@ class PaketLaundryController extends Controller
         return view('paket-laundry.show', compact('paket', 'jumlahPenggunaan'));
     }
 
-    public function edit(PaketLaundry $paket)
+    public function edit(PaketLaundry $paket): View
     {
         return view('paket-laundry.form', [
             'paket' => $paket,
@@ -100,15 +104,15 @@ class PaketLaundryController extends Controller
         ]);
     }
 
-    public function update(Request $request, PaketLaundry $paket)
+    public function update(Request $request, PaketLaundry $paket): RedirectResponse
     {
         $paket->update($this->validatedData($request));
 
         return redirect()->route('paket-laundry.index')
-            ->with('success', 'Paket laundry ' . $paket->nama_paket . ' berhasil diperbarui.');
+            ->with('success', 'Paket laundry '.$paket->nama_paket.' berhasil diperbarui.');
     }
 
-    public function destroy(PaketLaundry $paket)
+    public function destroy(PaketLaundry $paket): RedirectResponse
     {
         if ($paket->detailTransaksi()->exists()) {
             return redirect()->route('paket-laundry.index')
@@ -119,9 +123,12 @@ class PaketLaundryController extends Controller
         $paket->delete();
 
         return redirect()->route('paket-laundry.index')
-            ->with('success', 'Paket laundry ' . $nama . ' berhasil dihapus.');
+            ->with('success', 'Paket laundry '.$nama.' berhasil dihapus.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validatedData(Request $request): array
     {
         return $request->validate([
@@ -142,12 +149,19 @@ class PaketLaundryController extends Controller
         ]);
     }
 
-    private function kategoriOptions(?string $kategoriSaatIni = null)
+    /**
+     * @return Collection<int, string>
+     */
+    private function kategoriOptions(?string $kategoriSaatIni = null): Collection
     {
-        return PaketLaundry::query()->distinct()->orderBy('kategori')->pluck('kategori')
+        return PaketLaundry::query()
+            ->distinct()
+            ->orderBy('kategori')
+            ->pluck('kategori')
             ->merge(self::KATEGORI_DEFAULT)
             ->when($kategoriSaatIni, fn ($options) => $options->push($kategoriSaatIni))
-            ->unique(fn ($value) => strtolower($value))
+            ->map(fn ($value): string => (string) $value)
+            ->unique(fn (string $value) => strtolower($value))
             ->values();
     }
 }

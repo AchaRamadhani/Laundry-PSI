@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\LaundrySetting;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -11,7 +14,7 @@ use Illuminate\Validation\Rules\Password;
 
 class PengaturanController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $settings = LaundrySetting::query()->first() ?? new LaundrySetting([
             'opening_time' => '07:00',
@@ -30,7 +33,7 @@ class PengaturanController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'laundry_name' => ['nullable', 'string', 'max:120'],
@@ -60,11 +63,11 @@ class PengaturanController extends Controller
         ]);
 
         DB::transaction(function () use ($validated) {
-            $settings = LaundrySetting::query()->first() ?? new LaundrySetting();
-            $settings->fill(collect($validated)->except([
+            $settings = LaundrySetting::query()->first() ?? new LaundrySetting;
+            $settings->fill(Arr::except($validated, [
                 'current_password',
                 'new_password',
-            ])->all());
+            ]));
             $settings->save();
 
             if (! empty($validated['new_password'])) {

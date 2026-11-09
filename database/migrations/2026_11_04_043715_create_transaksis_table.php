@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('users');
 
             $table->date('tanggal_masuk');
-            $table->dateTime('estimasi_selesai')->nullable();   
+            $table->dateTime('estimasi_selesai')->nullable();
             $table->decimal('total_harga', 12, 2)->default(0);
             $table->string('status_cucian')->default('antrean');
             $table->text('catatan')->nullable();

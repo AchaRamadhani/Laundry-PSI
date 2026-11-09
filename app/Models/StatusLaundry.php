@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StatusLaundry extends Model
 {
@@ -16,7 +17,12 @@ class StatusLaundry extends Model
         'waktu_status',
     ];
 
-    public function transaksi()
+    /**
+     * Relasi status laundry ke transaksi.
+     *
+     * @return BelongsTo<Transaksi, $this>
+     */
+    public function transaksi(): BelongsTo
     {
         return $this->belongsTo(
             Transaksi::class,
@@ -25,8 +31,16 @@ class StatusLaundry extends Model
         );
     }
 
-    public function admin()
+    /**
+     * Relasi status laundry ke admin.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function admin(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_admin');
+        return $this->belongsTo(
+            User::class,
+            'id_admin'
+        );
     }
 }
