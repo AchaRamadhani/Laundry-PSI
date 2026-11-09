@@ -22,11 +22,37 @@
             </a>
         </section>
 
-        @if (session('success'))
+        @if (session('success') && !session('nota'))
             <div class="cucian-alert success" role="status">{{ session('success') }}</div>
         @endif
         @if (session('error'))
             <div class="cucian-alert error" role="alert">{{ session('error') }}</div>
+        @endif
+
+        @if (session('nota'))
+            <div class="nota-success-overlay" id="notaSuccessDialog" role="dialog" aria-modal="true" aria-labelledby="notaSuccessTitle">
+                <section class="nota-success-modal">
+                    <button class="nota-success-close" type="button" aria-label="Tutup popup">×</button>
+                    <div class="nota-success-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="m18 33 9 9 20-22"/></svg></div>
+                    <h2 id="notaSuccessTitle">Data Berhasil Disimpan</h2>
+                    <p>No. Nota: <strong>{{ session('nota') }}</strong></p>
+                </section>
+            </div>
+            <script>
+                (() => {
+                    const dialog = document.getElementById('notaSuccessDialog');
+                    const closeButton = dialog?.querySelector('.nota-success-close');
+                    const closeDialog = () => dialog?.remove();
+                    closeButton?.focus();
+                    closeButton?.addEventListener('click', closeDialog);
+                    dialog?.addEventListener('click', (event) => {
+                        if (event.target === dialog) closeDialog();
+                    });
+                    document.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') closeDialog();
+                    }, { once: true });
+                })();
+            </script>
         @endif
 
         <section class="cucian-metrics" aria-label="Ringkasan data cucian bulan {{ $namaBulan[$bulan] }} {{ $tahun }}">

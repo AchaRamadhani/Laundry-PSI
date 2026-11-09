@@ -1761,3 +1761,99 @@ html { min-height: 100%; background: #e7e3e3; }
         .pelanggan-month) { height: 40px; min-height: 40px; }
     .admin-main .settings-date-select { width: 100%; }
 }
+
+/* Figma-aligned form for creating a new laundry transaction. */
+.cucian-figma-page { width: min(100%, 1120px); margin: 0 auto; color: #161923; }
+.cucian-figma-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin: 0 4px 14px; }
+.cucian-figma-heading h1 { margin: 0; color: #262b66; font-size: 28px; line-height: 1.2; }
+.cucian-figma-heading p { margin: 4px 0 0; color: #6f748a; font-size: 13px; }
+.cucian-figma-back, .figma-cancel-button, .figma-clear-button, .figma-save-button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; border: 1px solid #cbd5ee; border-radius: 5px; background: #fff; color: #0039e9; font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
+.cucian-figma-card { padding: 24px; border: 1px solid #e3e5ed; border-radius: 8px; background: #fff; }
+.cucian-figma-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; }
+.cucian-figma-field { display: flex; min-width: 0; flex-direction: column; gap: 7px; color: #171923; font-size: 13px; font-weight: 600; }
+.cucian-figma-field > span b { color: #e52435; }
+.cucian-figma-field input, .cucian-figma-field select, .cucian-figma-field textarea { box-sizing: border-box; width: 100%; min-height: 42px; padding: 0 12px; border: 1px solid #c8cbd2; border-radius: 6px; background: #fff; color: #171923; font: inherit; font-size: 13px !important; font-weight: 400; outline: none; }
+.cucian-figma-field input:focus, .cucian-figma-field select:focus, .cucian-figma-field textarea:focus { border-color: #3976f6; box-shadow: 0 0 0 3px rgb(0 57 233 / 9%); }
+.cucian-figma-field input::placeholder, .cucian-figma-field textarea::placeholder { color: #9296a1; }
+.cucian-figma-field input:disabled, .cucian-figma-field input[readonly] { background: #f2f2f2; color: #171923; }
+.cucian-figma-field small { min-height: 15px; color: #7b8091; font-size: 11px !important; font-weight: 400; line-height: 1.35; }
+.cucian-figma-field small.is-error { color: #c62832; }
+.figma-quantity-field, .figma-price-field { display: flex; min-height: 42px; overflow: hidden; border: 1px solid #c8cbd2; border-radius: 6px; background: #fff; }
+.figma-quantity-field:focus-within, .figma-price-field:focus-within { border-color: #3976f6; box-shadow: 0 0 0 3px rgb(0 57 233 / 9%); }
+.figma-quantity-field input, .figma-price-field input { min-width: 0; min-height: 40px; border: 0; border-radius: 0; box-shadow: none !important; }
+.figma-quantity-field > span { display: flex; min-width: 66px; align-items: center; justify-content: center; padding: 0 12px; border-left: 1px solid #d6d8df; color: #232632; font-size: 13px; font-weight: 500; }
+.figma-price-field > span { display: flex; min-width: 52px; align-items: center; justify-content: center; border-right: 1px solid #c8cbd2; color: #1a1c25; font-size: 13px; font-weight: 500; }
+.cucian-figma-field textarea { min-height: 64px; padding: 10px 12px; resize: vertical; }
+.cucian-figma-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #e7e8ed; }
+.cucian-figma-footer > div { display: flex; align-items: center; gap: 12px; }
+.figma-clear-button { color: #11141c; border-color: #c8cbd2; }
+.figma-save-button { min-width: 170px; color: #fff; border-color: #0039e9; background: #0039e9; box-shadow: 0 2px 5px rgb(0 57 233 / 18%); font-weight: 600; }
+.figma-clear-button svg, .figma-save-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.figma-save-button:hover { background: #0733c7; }
+
+.nota-success-overlay { position: fixed; z-index: 10000; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(22 24 34 / 30%); }
+.nota-success-modal { position: relative; display: flex; width: min(100%, 500px); min-height: 270px; flex-direction: column; align-items: center; justify-content: center; padding: 30px 26px; border: 1px solid #d8d8dc; border-radius: 8px; background: #fff; text-align: center; box-shadow: 0 16px 48px rgb(26 35 66 / 18%); }
+.nota-success-close { position: absolute; top: 8px; right: 11px; width: 32px; height: 32px; border: 0; background: transparent; color: #6f748a; font-size: 25px; cursor: pointer; }
+.nota-success-icon { display: grid; width: 104px; height: 104px; place-items: center; margin-bottom: 18px; border-radius: 50%; background: #4d92f4; }
+.nota-success-icon svg { width: 76px; height: 76px; padding: 14px; border-radius: 50%; background: #0039e9; fill: none; stroke: #fff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 5; }
+.nota-success-modal h2 { margin: 0 0 12px; color: #262b66; font-size: 24px; line-height: 1.25; }
+.nota-success-modal p { margin: 0; color: #171923; font-size: 20px; }
+.nota-success-modal p strong { font-weight: 500; }
+
+@media (max-width: 700px) {
+    .cucian-figma-heading { align-items: stretch; flex-direction: column; }
+    .cucian-figma-back { align-self: flex-start; }
+    .cucian-figma-card { padding: 18px 14px; }
+    .cucian-figma-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .cucian-figma-footer { align-items: stretch; flex-direction: column-reverse; }
+    .cucian-figma-footer > div { justify-content: flex-end; }
+    .figma-clear-button { align-self: flex-start; }
+    .figma-save-button { min-width: 0; }
+    .nota-success-modal { min-height: 240px; padding-inline: 18px; }
+    .nota-success-modal h2 { font-size: 21px; }
+    .nota-success-modal p { font-size: 18px; }
+}
+
+/* Figma-style package create/edit dialog */
+.paket-modal-backdrop { position: fixed; z-index: 10000; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 22px; background: rgb(31 32 38 / 14%); }
+.paket-modal { position: relative; width: min(100%, 632px); max-height: calc(100vh - 44px); overflow-y: auto; padding: 26px 34px 24px; border: 1px solid #e1e1e3; border-radius: 9px; background: #fff; box-shadow: 0 10px 32px rgb(22 29 52 / 12%); outline: none; }
+.paket-modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+.paket-modal-header h1 { margin: 0; color: #17191f; font-size: 21px; font-weight: 700; line-height: 1.25; letter-spacing: -.02em; }
+.paket-modal-header p { margin: 5px 0 0; color: #676b74; font-size: 11px; line-height: 1.5; }
+.paket-modal-close { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; margin: -2px -8px 0 0; color: #a3a4a7; border-radius: 50%; font-size: 29px; font-weight: 300; line-height: 1; text-decoration: none; }
+.paket-modal-close:hover { color: #3b3d44; background: #f4f5f7; }
+.paket-modal-form { display: flex; flex-direction: column; gap: 23px; }
+.paket-modal-field { position: relative; display: flex; min-width: 0; flex-direction: column; gap: 8px; color: #15171b; font-size: 11px; font-weight: 650; }
+.paket-modal-field > span:first-child b { color: #e54848; }
+.paket-modal-field input, .paket-modal-field select, .paket-modal-field textarea { width: 100%; min-height: 39px; padding: 9px 12px; color: #272a31; border: 1px solid #d1d2d5; border-radius: 6px; outline: none; background: #fff; font: inherit; font-size: 11px; font-weight: 400; }
+.paket-modal-field textarea { min-height: 152px; padding: 12px 14px 29px; resize: vertical; line-height: 1.5; }
+.paket-modal-field input::placeholder, .paket-modal-field textarea::placeholder { color: #a3a4a8; }
+.paket-modal-field input:focus, .paket-modal-field select:focus, .paket-modal-field textarea:focus { border-color: #4380f4; box-shadow: 0 0 0 2px rgb(21 92 238 / 14%); }
+.paket-description-count { position: absolute; right: 12px; bottom: 9px; color: #909198; font-size: 9px; font-weight: 400; }
+.paket-modal-fields-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 26px; }
+.paket-price-input { display: flex; min-height: 39px; overflow: hidden; border: 1px solid #d1d2d5; border-radius: 6px; }
+.paket-price-input:focus-within { border-color: #4380f4; box-shadow: 0 0 0 2px rgb(21 92 238 / 14%); }
+.paket-price-input > span { display: flex; width: 43px; flex: 0 0 43px; align-items: center; justify-content: center; color: #272a31; border-right: 1px solid #d1d2d5; background: #f4f4f5; font-size: 11px; font-weight: 500; }
+.paket-modal-field .paket-price-input input { min-width: 0; min-height: 37px; border: 0; border-radius: 0; box-shadow: none; }
+.paket-modal-field select { appearance: auto; cursor: pointer; }
+.paket-modal-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 1px; }
+.paket-modal-footer > div { display: flex; align-items: center; gap: 12px; }
+.paket-clear-button, .paket-cancel-button, .paket-save-button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; gap: 8px; padding: 0 17px; border: 1px solid #cfd1d5; border-radius: 6px; background: #fff; color: #16181d; cursor: pointer; font: inherit; font-size: 11px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.paket-clear-button svg, .paket-save-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.paket-clear-button:hover, .paket-cancel-button:hover { border-color: #aeb3bd; background: #f8f9fb; }
+.paket-save-button { min-width: 128px; color: #fff; border-color: #003fe8; background: #073fe9; box-shadow: 0 2px 5px rgb(0 57 233 / 16%); }
+.paket-save-button:hover { color: #fff; background: #0734c9; }
+.paket-modal-errors { margin: -8px 0 18px; padding: 10px 12px; color: #9f3030; border: 1px solid #f0c8c8; border-radius: 6px; background: #fff6f6; font-size: 11px; }
+.paket-modal-errors ul { margin: 5px 0 0; padding-left: 18px; }
+
+@media (max-width: 600px) {
+    .paket-modal-backdrop { align-items: start; padding: 12px; }
+    .paket-modal { width: 100%; max-height: calc(100vh - 24px); padding: 20px 18px; }
+    .paket-modal-header { margin-bottom: 20px; }
+    .paket-modal-header h1 { font-size: 19px; }
+    .paket-modal-form { gap: 18px; }
+    .paket-modal-fields-row { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .paket-modal-footer { align-items: stretch; flex-direction: column; }
+    .paket-modal-footer > div { justify-content: flex-end; }
+    .paket-clear-button { align-self: flex-start; }
+}

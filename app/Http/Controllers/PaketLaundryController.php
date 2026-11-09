@@ -8,7 +8,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class PaketLaundryController extends Controller
 {
@@ -76,7 +75,11 @@ class PaketLaundryController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $paket = PaketLaundry::create($this->validatedData($request));
+        $data = $this->validatedData($request);
+        $data['kategori'] = $this->kategoriUntukNama($data['nama_paket']);
+        $data['status'] = 'aktif';
+
+        $paket = PaketLaundry::create($data);
 
         return redirect()->route('paket-laundry.index')
             ->with('success', 'Paket laundry '.$paket->nama_paket.' berhasil ditambahkan.');
@@ -106,7 +109,11 @@ class PaketLaundryController extends Controller
 
     public function update(Request $request, PaketLaundry $paket): RedirectResponse
     {
-        $paket->update($this->validatedData($request));
+        $data = $this->validatedData($request);
+        $data['kategori'] = $this->kategoriUntukNama($data['nama_paket']);
+        $data['status'] = $paket->status;
+
+        $paket->update($data);
 
         return redirect()->route('paket-laundry.index')
             ->with('success', 'Paket laundry '.$paket->nama_paket.' berhasil diperbarui.');
@@ -133,20 +140,33 @@ class PaketLaundryController extends Controller
     {
         return $request->validate([
             'nama_paket' => ['required', 'string', 'max:255'],
-            'kategori' => ['required', 'string', 'max:80'],
-            'deskripsi' => ['nullable', 'string', 'max:2000'],
+            'deskripsi' => ['nullable', 'string', 'max:200'],
             'harga_mulai' => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
-            'durasi' => ['required', 'integer', 'min:0', 'max:365'],
-            'status' => ['required', Rule::in(self::STATUS_VALID)],
+            'durasi' => ['required', 'integer', 'min:1', 'max:7'],
         ], [
             'nama_paket.required' => 'Nama paket wajib diisi.',
-            'kategori.required' => 'Pilih kategori paket.',
             'harga_mulai.required' => 'Harga mulai wajib diisi.',
             'harga_mulai.numeric' => 'Harga harus berupa angka.',
             'durasi.required' => 'Durasi layanan wajib diisi.',
             'durasi.integer' => 'Durasi harus berupa jumlah hari.',
-            'status.required' => 'Pilih status paket.',
+            'durasi.min' => 'Durasi paling singkat adalah 1 hari.',
+            'durasi.max' => 'Durasi paling lama adalah 7 hari.',
         ]);
+    }
+
+    private function kategoriUntukNama(string $namaPaket): string
+    {
+        $nama = mb_strtolower(trim($namaPaket));
+
+        if (str_contains($nama, 'satuan')) {
+            return 'Satuan';
+        }
+
+        if (str_contains($nama, 'express') || str_contains($nama, 'treatment')) {
+            return 'Khusus';
+        }
+
+        return 'Kiloan';
     }
 
     /**
