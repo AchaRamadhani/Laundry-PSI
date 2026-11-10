@@ -2344,3 +2344,413 @@ html { min-height: 100%; background: #e7e3e3; }
 .admin-main .settings-page .settings-password-wrap input[type="password"] + button::before {
     background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%2367738a'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%203l18%2018'/%3E%3Cpath%20d='M10.6%2010.6a2%202%200%200%200%202.8%202.8'/%3E%3Cpath%20d='M9.9%205.1A10.9%2010.9%200%200%201%2012%204.9c5.6%200%209.7%204.1%2010.6%207.1a11.8%2011.8%200%200%201-3.4%204.7M6.6%206.6C4.4%208%203%2010.2%202.3%2012c.7%202.2%203.9%207.1%209.7%207.1%201.2%200%202.3-.2%203.3-.6'/%3E%3C/svg%3E");
 }
+
+/* Form Pelanggan mengikuti dialog pada prototipe, hanya di route form Pelanggan. */
+.admin-main .pelanggan-form-overlay {
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    padding: 24px;
+    background: rgb(35 38 46 / 28%);
+}
+
+.admin-main .pelanggan-form-dialog {
+    width: min(690px, 100%);
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 18px 54px rgb(20 25 38 / 20%);
+}
+
+.admin-main .pelanggan-form-dialog-header {
+    display: flex;
+    min-height: 78px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 17px 30px;
+    border-bottom: 1px solid #dedede;
+}
+
+.admin-main .pelanggan-form-dialog-header h1 {
+    margin: 0;
+    color: #111;
+    font-size: 24px !important;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.admin-main .pelanggan-form-close {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    place-items: center;
+    color: #999;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: color .15s ease, background-color .15s ease;
+}
+
+.admin-main .pelanggan-form-close:hover {
+    color: #333;
+    background: #f2f3f5;
+}
+
+.admin-main .pelanggan-form-close svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2.4;
+}
+
+.admin-main .pelanggan-form-card {
+    display: flex;
+    max-width: none;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0 0 12px 12px;
+    background: #fff;
+}
+
+.admin-main .pelanggan-form-body {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 21px 38px 44px;
+}
+
+.admin-main .pelanggan-form-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-field {
+    min-width: 0;
+    gap: 8px;
+    color: #111;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-field > span b {
+    color: #e3342f;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-field input {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+    color: #333;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    background: #fff;
+    font: inherit;
+    font-size: 13px !important;
+    font-weight: 400;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-field input::placeholder {
+    color: #a5a5a5;
+    opacity: 1;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-field input:focus {
+    border-color: #7ba4ff;
+    outline: 3px solid rgb(44 103 239 / 16%);
+    outline-offset: 1px;
+    box-shadow: none;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-id-field input:disabled {
+    color: #999;
+    border-color: #d2d2d2;
+    background: #f6f6f6;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.admin-main .pelanggan-form-card .pelanggan-field small {
+    color: #a0a0a0;
+    font-size: 12px !important;
+    font-weight: 400;
+}
+
+.admin-main .pelanggan-form-errors {
+    margin: 20px 38px 0;
+}
+
+.admin-main .pelanggan-form-footer {
+    display: flex;
+    min-height: 110px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 38px 26px;
+    border-top: 1px solid #dedede;
+}
+
+.admin-main .pelanggan-form-clear,
+.admin-main .pelanggan-form-cancel,
+.admin-main .pelanggan-form-submit {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 17px;
+    border: 1px solid #c9c9c9;
+    border-radius: 7px;
+    background: #fff;
+    color: #171717;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px !important;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.admin-main .pelanggan-form-clear {
+    min-width: 188px;
+    min-height: 56px;
+    font-size: 15px !important;
+}
+
+.admin-main .pelanggan-form-clear:hover,
+.admin-main .pelanggan-form-cancel:hover {
+    color: #0648e9;
+    border-color: #8da8e1;
+    background: #f8faff;
+}
+
+.admin-main .pelanggan-form-clear svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.admin-main .pelanggan-form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.admin-main .pelanggan-form-cancel {
+    min-width: 125px;
+}
+
+.admin-main .pelanggan-form-submit {
+    min-width: 150px;
+    color: #fff;
+    border-color: #0648e9;
+    background: #073fe3;
+    box-shadow: 0 2px 4px rgb(8 70 233 / 15%);
+}
+
+.admin-main .pelanggan-form-submit:hover {
+    color: #fff;
+    border-color: #0636c6;
+    background: #0636c6;
+}
+
+.admin-main .pelanggan-form-submit svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.admin-main .pelanggan-form-dialog :is(a, button, input):focus-visible {
+    outline: 3px solid rgb(8 70 233 / 26%);
+    outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+    .admin-main .pelanggan-form-overlay { padding: 16px; }
+    .admin-main .pelanggan-form-dialog { max-height: calc(100dvh - 32px); }
+    .admin-main .pelanggan-form-dialog-header { min-height: 68px; padding: 14px 20px; }
+    .admin-main .pelanggan-form-dialog-header h1 { font-size: 21px !important; }
+    .admin-main .pelanggan-form-body { gap: 21px; padding: 20px 22px 28px; }
+    .admin-main .pelanggan-form-fields { grid-template-columns: 1fr; gap: 18px; }
+    .admin-main .pelanggan-form-footer { min-height: auto; padding: 18px 22px 22px; }
+    .admin-main .pelanggan-form-errors { margin-right: 22px; margin-left: 22px; }
+}
+
+@media (max-width: 480px) {
+    .admin-main .pelanggan-form-overlay { place-items: center; padding: 10px; }
+    .admin-main .pelanggan-form-dialog { max-height: calc(100dvh - 20px); border-radius: 10px; }
+    .admin-main .pelanggan-form-dialog-header { min-height: 62px; padding: 12px 16px; }
+    .admin-main .pelanggan-form-dialog-header h1 { font-size: 19px !important; }
+    .admin-main .pelanggan-form-body { padding: 17px 16px 22px; }
+    .admin-main .pelanggan-form-footer { align-items: stretch; flex-direction: column; gap: 14px; padding: 15px 16px 18px; }
+    .admin-main .pelanggan-form-clear { width: 100%; min-height: 46px; }
+    .admin-main .pelanggan-form-actions { width: 100%; gap: 8px; }
+    .admin-main .pelanggan-form-cancel,
+    .admin-main .pelanggan-form-submit { min-width: 0; flex: 1; padding: 0 10px; font-size: 13px !important; }
+    .admin-main .pelanggan-form-errors { margin-right: 16px; margin-left: 16px; }
+}
+
+/* Konfirmasi sukses saat pelanggan baru berhasil disimpan. */
+.pelanggan-save-success-backdrop {
+    position: fixed;
+    z-index: 10010;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    padding: 20px;
+    background: rgb(35 38 46 / 28%);
+    opacity: 1;
+    transition: opacity 1s ease;
+}
+
+.pelanggan-save-success-backdrop[hidden],
+.pelanggan-form-errors[hidden] { display: none !important; }
+
+.pelanggan-save-success-backdrop.is-closing { opacity: 0; }
+
+.pelanggan-save-success-card {
+    display: flex;
+    width: min(460px, 100%);
+    min-height: 270px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    padding: 22px 20px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 36px rgb(12 18 32 / 16%);
+    text-align: center;
+    transform: scale(1);
+    transition: transform 1s ease;
+}
+
+.pelanggan-save-success-backdrop.is-closing .pelanggan-save-success-card { transform: scale(.97); }
+
+.pelanggan-save-success-icon {
+    display: grid;
+    width: 118px;
+    height: 118px;
+    flex: 0 0 118px;
+    place-items: center;
+    border-radius: 50%;
+    background: #5794f6;
+}
+
+.pelanggan-save-success-icon > span {
+    display: grid;
+    width: 88px;
+    height: 88px;
+    place-items: center;
+    border-radius: 50%;
+    background: #073fe3;
+}
+
+.pelanggan-save-success-icon svg {
+    width: 56px;
+    height: 56px;
+    fill: none;
+    stroke: #5794f6;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+    stroke-width: 6;
+}
+
+.pelanggan-save-success-card h2 {
+    margin: 4px 0 0;
+    color: #29316c;
+    font-size: 31px !important;
+    font-weight: 750;
+    line-height: 1.15;
+}
+
+.pelanggan-save-success-card p {
+    margin: 0;
+    color: #111;
+    font-size: 24px !important;
+    line-height: 1.25;
+}
+
+.pelanggan-save-success-card p strong { font-weight: 500; }
+
+@media (max-width: 600px) {
+    .pelanggan-save-success-backdrop { padding: 16px; }
+    .pelanggan-save-success-card { min-height: 230px; gap: 10px; padding: 20px 16px; }
+    .pelanggan-save-success-icon { width: 96px; height: 96px; flex-basis: 96px; }
+    .pelanggan-save-success-icon > span { width: 72px; height: 72px; }
+    .pelanggan-save-success-icon svg { width: 46px; height: 46px; }
+    .pelanggan-save-success-card h2 { font-size: clamp(20px, 6vw, 28px) !important; }
+    .pelanggan-save-success-card p { font-size: clamp(16px, 4.5vw, 21px) !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pelanggan-save-success-backdrop,
+    .pelanggan-save-success-card { transition: none; }
+}
+
+/* Pelanggan: make the month filter control and its native menu as wide as service. */
+.admin-main .pelanggan-page .pelanggan-filters .pelanggan-month {
+    display: block;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 6px;
+}
+
+.admin-main .pelanggan-page .pelanggan-filters .pelanggan-month svg {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 11px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.admin-main .pelanggan-page .pelanggan-filters .pelanggan-month select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0 32px 0 34px !important;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    background-image: none;
+    font-size: 13px !important;
+    cursor: pointer;
+}
+
+.admin-main .pelanggan-page .pelanggan-filters .pelanggan-month:focus-within {
+    border-color: #7ba4ff;
+    box-shadow: 0 0 0 3px rgb(44 103 239 / 14%);
+}
+
+.admin-main .pelanggan-page .pelanggan-filters .pelanggan-month select:focus-visible {
+    outline: 0;
+}

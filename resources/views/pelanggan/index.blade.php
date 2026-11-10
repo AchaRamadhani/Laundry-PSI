@@ -16,7 +16,41 @@
             <a class="pelanggan-add-button" href="{{ route('pelanggan.create') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Tambah Pelanggan</a>
         </section>
 
-        @if (session('success'))<div class="cucian-alert success" role="status">{{ session('success') }}</div>@endif
+        @if (session('pelanggan_created_id'))
+            <div class="pelanggan-save-success-backdrop" id="pelanggan-save-success" role="status" aria-live="polite">
+                <section class="pelanggan-save-success-card" aria-label="Data pelanggan berhasil disimpan">
+                    <span class="pelanggan-save-success-icon" aria-hidden="true"><span><svg viewBox="0 0 48 48"><path d="m11 25 9 9 18-21"/></svg></span></span>
+                    <h2>Data Berhasil Disimpan</h2>
+                    <p>ID Pelanggan: <strong>PLG-GL-{{ str_pad((string) session('pelanggan_created_id'), 3, '0', STR_PAD_LEFT) }}</strong></p>
+                </section>
+            </div>
+            <script>
+                (() => {
+                    const notification = document.getElementById('pelanggan-save-success');
+                    if (!notification) return;
+
+                    let dismissed = false;
+                    const fadeDuration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1000;
+                    const dismiss = () => {
+                        if (dismissed) return;
+                        dismissed = true;
+                        notification.classList.add('is-closing');
+                        window.setTimeout(() => notification.remove(), fadeDuration);
+                    };
+
+                    notification.addEventListener('click', (event) => {
+                        if (event.target === notification) dismiss();
+                    });
+                    const handleEscape = (event) => {
+                        if (event.key !== 'Escape') return;
+                        document.removeEventListener('keydown', handleEscape);
+                        dismiss();
+                    };
+                    document.addEventListener('keydown', handleEscape);
+                    window.setTimeout(dismiss, 3500);
+                })();
+            </script>
+        @elseif (session('success'))<div class="cucian-alert success" role="status">{{ session('success') }}</div>@endif
         @if (session('error'))<div class="cucian-alert error" role="alert">{{ session('error') }}</div>@endif
 
         <section class="pelanggan-metrics" aria-label="Ringkasan pelanggan">
