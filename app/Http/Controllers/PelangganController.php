@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -97,7 +98,7 @@ class PelangganController extends Controller
         return view('pelanggan.form', ['pelanggan' => null]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'nama_pelanggan' => ['required', 'string', 'max:255'],
@@ -109,10 +110,22 @@ class PelangganController extends Controller
             'no_telp.unique' => 'Nomor telepon sudah terdaftar.',
         ]);
 
-        Pelanggan::create($validated);
+        $pelanggan = Pelanggan::create($validated);
+
+        $pelangganCode = 'PLG-GL-'.str_pad((string) $pelanggan->id, 3, '0', STR_PAD_LEFT);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Data berhasil disimpan.',
+                'customer_id' => $pelanggan->id,
+                'customer_code' => $pelangganCode,
+                'redirect_url' => route('pelanggan.index'),
+            ], 201);
+        }
 
         return redirect()->route('pelanggan.index')
-            ->with('success', 'Data pelanggan berhasil ditambahkan.');
+            ->with('success', 'Data pelanggan berhasil ditambahkan.')
+            ->with('pelanggan_created_id', $pelanggan->id);
     }
 
     public function show(Pelanggan $pelanggan): View
