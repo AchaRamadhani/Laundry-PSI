@@ -2697,7 +2697,64 @@ html { min-height: 100%; background: #e7e3e3; }
 
 .pelanggan-save-success-card p strong { font-weight: 500; }
 
-@media (max-width: 600px) {
+/* Konfirmasi hapus pelanggan mengikuti ukuran popup konfirmasi admin. */
+.pelanggan-delete-modal-backdrop[hidden] { display: none !important; }
+.pelanggan-delete-modal-backdrop {
+    position: fixed;
+    z-index: 10020;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 18px;
+    background: rgb(33 38 52 / 42%);
+}
+
+.pelanggan-delete-modal {
+    width: min(100%, 450px);
+    max-height: calc(100vh - 36px);
+    max-height: calc(100dvh - 36px);
+    overflow-y: auto;
+    padding: 15px 39px 19px;
+    color: #111318;
+    border: 2px solid #b7b7b7;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 16px 45px rgb(13 23 49 / 20%);
+    text-align: center;
+}
+
+.pelanggan-delete-modal-logo { display: block; width: 160px; height: 100px; margin: 0 auto 7px; object-fit: contain; }
+.pelanggan-delete-modal h2 { margin: 0; color: #101114; font-size: 20px; font-weight: 750; line-height: 1.25; }
+.pelanggan-delete-modal-description { margin: 10px 0 14px; color: #858585; font-size: 16px; line-height: 1.3; }
+.pelanggan-delete-modal-identity { margin: 0 0 15px; }
+.pelanggan-delete-modal-identity p { margin: 4px 0; color: #4d5362; font-size: 14px; line-height: 1.35; }
+.pelanggan-delete-modal-identity strong { color: #142247; font-weight: 750; }
+.pelanggan-delete-modal hr { height: 1px; margin: 0; border: 0; background: #d1d1d1; }
+
+.pelanggan-delete-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 16px 0 18px; }
+.pelanggan-delete-modal-actions button { min-height: 39px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 600; transition: background .15s ease, color .15s ease, transform .15s ease; }
+.pelanggan-delete-modal-actions button:active { transform: translateY(1px); }
+.pelanggan-delete-cancel { color: #0649ec; border: 1px solid #0750ff; background: #fff; }
+.pelanggan-delete-cancel:hover { background: #f1f5ff; }
+.pelanggan-delete-accept { color: #fff; border: 1px solid #f11720; background: #f11720; }
+.pelanggan-delete-accept:hover { background: #d81019; }
+.pelanggan-delete-modal-actions button:focus-visible { outline: 3px solid rgb(8 70 233 / 35%); outline-offset: 2px; }
+
+.pelanggan-delete-modal-note { display: flex; min-height: 30px; align-items: center; gap: 7px; margin: 13px 0 0; color: #687894; text-align: left; }
+.pelanggan-delete-modal-note svg { width: 25px; height: 25px; flex: 0 0 25px; fill: none; stroke: #4777ff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.pelanggan-delete-modal-note span { font-size: 12px; line-height: 1.35; }
+
+@media (max-width: 520px) {
+    .pelanggan-delete-modal-backdrop { padding: 14px; }
+    .pelanggan-delete-modal { padding: 13px 20px 16px; }
+    .pelanggan-delete-modal h2 { font-size: 19px; }
+    .pelanggan-delete-modal-description { font-size: 14px; }
+    .pelanggan-delete-modal-actions { gap: 12px; }
+    .pelanggan-delete-modal-actions button { font-size: 13px; }
+    .pelanggan-delete-modal-note span { font-size: 11px; }
+}@media (max-width: 600px) {
     .pelanggan-save-success-backdrop { padding: 16px; }
     .pelanggan-save-success-card { min-height: 230px; gap: 10px; padding: 20px 16px; }
     .pelanggan-save-success-icon { width: 96px; height: 96px; flex-basis: 96px; }

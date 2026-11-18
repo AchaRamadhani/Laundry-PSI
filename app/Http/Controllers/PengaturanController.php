@@ -48,7 +48,7 @@ class PengaturanController extends Controller
             'notify_message' => ['required', 'boolean'],
             'date_format' => ['required', Rule::in(['d-m-Y', 'Y-m-d', 'd/m/Y'])],
             'confirm_logout' => ['required', 'boolean'],
-            'current_password' => ['required_with:new_password', 'current_password'],
+            'current_password' => ['nullable', 'required_with:new_password', 'current_password'],
             'new_password' => ['nullable', 'string', Password::default(), 'confirmed'],
         ], [
             'opening_time.required' => 'Jam buka wajib diisi.',
