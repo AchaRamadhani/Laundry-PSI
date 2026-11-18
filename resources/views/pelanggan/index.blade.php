@@ -89,7 +89,7 @@
                                         <div class="pelanggan-row-actions">
                                             <a href="{{ route('pelanggan.show', $item) }}" class="row-action view" aria-label="Lihat {{ $item->nama_pelanggan }}" title="Lihat detail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a>
                                             <a href="{{ route('pelanggan.edit', $item) }}" class="row-action edit" aria-label="Ubah {{ $item->nama_pelanggan }}" title="Ubah"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.8 4.8L8 20l11.6-11.6-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg></a>
-                                            <form action="{{ route('pelanggan.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data pelanggan {{ $item->nama_pelanggan }}?')">@csrf @method('DELETE')<button class="row-action delete" type="submit" aria-label="Hapus {{ $item->nama_pelanggan }}" title="Hapus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"/></svg></button></form>
+                                            <form class="pelanggan-delete-form" action="{{ route('pelanggan.destroy', $item) }}" method="POST" data-customer-name="{{ $item->nama_pelanggan }}" data-customer-id="PLG-GL-{{ str_pad((string) $item->id, 3, '0', STR_PAD_LEFT) }}">@csrf @method('DELETE')<button class="row-action delete" type="submit" aria-label="Hapus {{ $item->nama_pelanggan }}" title="Hapus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"/></svg></button></form>
                                         </div>
                                     </td>
                                 </tr>
@@ -147,5 +147,106 @@
                 </article>
             </aside>
         </section>
+
+        <div class="pelanggan-delete-modal-backdrop" id="pelangganDeleteConfirmModal" hidden>
+            <section class="pelanggan-delete-modal" role="dialog" aria-modal="true" aria-labelledby="pelangganDeleteConfirmTitle" aria-describedby="pelangganDeleteConfirmDescription" tabindex="-1">
+                <img class="pelanggan-delete-modal-logo" src="{{ asset('images/logo-g-laundry.png') }}" alt="Logo G'Laundry">
+                <h2 id="pelangganDeleteConfirmTitle">Hapus data pelanggan?</h2>
+                <p class="pelanggan-delete-modal-description" id="pelangganDeleteConfirmDescription">Apakah Anda yakin ingin menghapus pelanggan ini?</p>
+                <div class="pelanggan-delete-modal-identity">
+                    <p>Nama pelanggan: <strong id="pelangganDeleteCustomerName"></strong></p>
+                    <p>ID pelanggan: <strong id="pelangganDeleteCustomerId"></strong></p>
+                </div>
+                <hr>
+                <div class="pelanggan-delete-modal-actions">
+                    <button class="pelanggan-delete-cancel" id="pelangganDeleteCancelButton" type="button">Batal</button>
+                    <button class="pelanggan-delete-accept" id="pelangganDeleteAcceptButton" type="button">Ya, Hapus</button>
+                </div>
+                <hr>
+                <p class="pelanggan-delete-modal-note">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s9-4.2 9-11V5l-9-3-9 3v6c0 6.8 9 11 9 11Z"/><path d="m8 12 2.5 2.5L16 9"/></svg>
+                    <span>Data yang dihapus tidak dapat dikembalikan.</span>
+                </p>
+            </section>
+        </div>
+
+        <script>
+            (() => {
+                const modal = document.getElementById('pelangganDeleteConfirmModal');
+                if (!modal) return;
+
+                const description = document.getElementById('pelangganDeleteConfirmDescription');
+                const customerNameLabel = document.getElementById('pelangganDeleteCustomerName');
+                const customerIdLabel = document.getElementById('pelangganDeleteCustomerId');
+                const cancelButton = document.getElementById('pelangganDeleteCancelButton');
+                const acceptButton = document.getElementById('pelangganDeleteAcceptButton');
+                let pendingForm = null;
+                let pendingSubmitter = null;
+
+                const closeModal = (restoreFocus = true) => {
+                    modal.hidden = true;
+                    document.body.classList.remove('logout-modal-open');
+                    const trigger = pendingSubmitter;
+                    pendingForm = null;
+                    pendingSubmitter = null;
+                    if (restoreFocus) trigger?.focus();
+                };
+
+                document.querySelectorAll('.pelanggan-delete-form').forEach((form) => {
+                    form.addEventListener('submit', (event) => {
+                        if (form.dataset.confirmed === 'true') {
+                            delete form.dataset.confirmed;
+                            return;
+                        }
+
+                        event.preventDefault();
+                        pendingForm = form;
+                        pendingSubmitter = event.submitter || form.querySelector('button[type="submit"]');
+                        const customerName = form.dataset.customerName || 'pelanggan ini';
+                        description.textContent = 'Apakah Anda yakin ingin menghapus pelanggan ini?';
+                        customerNameLabel.textContent = customerName;
+                        customerIdLabel.textContent = form.dataset.customerId || '—';
+                        modal.hidden = false;
+                        document.body.classList.add('logout-modal-open');
+                        cancelButton.focus();
+                    });
+                });
+
+                cancelButton.addEventListener('click', () => closeModal());
+                acceptButton.addEventListener('click', () => {
+                    if (!pendingForm) return;
+
+                    const form = pendingForm;
+                    const submitter = pendingSubmitter;
+                    form.dataset.confirmed = 'true';
+                    closeModal(false);
+                    form.requestSubmit(submitter || undefined);
+                });
+
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) closeModal();
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (modal.hidden) return;
+
+                    if (event.key === 'Escape') {
+                        closeModal();
+                        return;
+                    }
+
+                    if (event.key === 'Tab') {
+                        const focusable = [cancelButton, acceptButton];
+                        if (event.shiftKey && document.activeElement === focusable[0]) {
+                            event.preventDefault();
+                            focusable.at(-1).focus();
+                        } else if (!event.shiftKey && document.activeElement === focusable.at(-1)) {
+                            event.preventDefault();
+                            focusable[0].focus();
+                        }
+                    }
+                });
+            })();
+        </script>
     </div>
 </x-layouts::app>
