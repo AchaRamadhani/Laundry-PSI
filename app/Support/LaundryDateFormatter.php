@@ -20,6 +20,9 @@ class LaundryDateFormatter
         'F d, Y' => 'MMMM D, YYYY',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     public static function availableFormats(): array
     {
         return self::AVAILABLE_FORMATS;
@@ -104,9 +107,20 @@ class LaundryDateFormatter
     private static function formatDate(Carbon $date, string $pattern): string
     {
         return match ($pattern) {
-            'd F Y' => $date->locale('id')->isoFormat('DD MMMM YYYY'),
-            'F d, Y' => $date->locale('en')->isoFormat('MMMM D, YYYY'),
+            'd F Y' => self::formatLocalizedDate($date, 'id', 'DD MMMM YYYY'),
+            'F d, Y' => self::formatLocalizedDate($date, 'en', 'MMMM D, YYYY'),
             default => $date->format($pattern),
         };
+    }
+
+    private static function formatLocalizedDate(
+        Carbon $date,
+        string $locale,
+        string $format
+    ): string {
+        $localizedDate = $date->copy();
+        $localizedDate->locale($locale);
+
+        return $localizedDate->isoFormat($format);
     }
 }

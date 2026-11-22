@@ -249,6 +249,7 @@ class CucianController extends Controller
         }
 
         $transaksi = DB::transaction(function () use ($validated, $paket) {
+            /** @var Pelanggan $pelanggan */
             $pelanggan = $validated['jenis_pelanggan'] === 'lama'
                 ? Pelanggan::query()->findOrFail($validated['pelanggan_id'])
                 : Pelanggan::updateOrCreate(

@@ -25,7 +25,7 @@ class TrackingToken
         }
 
         $key = self::key();
-        $phoneHash = self::phoneHash((string) ($transaksi->pelanggan?->no_telp ?? ''), $key);
+        $phoneHash = self::phoneHash((string) ($transaksi->pelanggan->no_telp ?? ''), $key);
         $randomPart = self::pseudorandomPart($noNota, $key);
 
         return $randomPart.$phoneHash;
@@ -83,7 +83,9 @@ class TrackingToken
         $encoded = '';
 
         for ($offset = 0; $offset < strlen($bits); $offset += 5) {
-            $encoded .= self::TOKEN_ALPHABET[bindec(substr($bits, $offset, 5))];
+            $index = (int) bindec(substr($bits, $offset, 5));
+
+            $encoded .= self::TOKEN_ALPHABET[$index];
         }
 
         return $encoded;
