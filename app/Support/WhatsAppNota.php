@@ -14,7 +14,9 @@ class WhatsAppNota
     public static function forTransaction(Transaksi $transaksi): ?array
     {
         $phone = self::recipientPhone($transaksi);
-        if ($phone === null) return null;
+        if ($phone === null) {
+            return null;
+        }
 
         $token = TrackingToken::forTransaction($transaksi);
         $websiteUrl = route('home');
@@ -110,7 +112,9 @@ class WhatsAppNota
     public static function forCompletion(Transaksi $transaksi): ?array
     {
         $phone = self::recipientPhone($transaksi);
-        if ($phone === null) return null;
+        if ($phone === null) {
+            return null;
+        }
 
         $namaPelanggan = trim((string) $transaksi->pelanggan?->nama_pelanggan) ?: 'Pelanggan';
         $token = TrackingToken::forTransaction($transaksi);
@@ -174,7 +178,9 @@ class WhatsAppNota
     private static function recipientPhone(Transaksi $transaksi): ?string
     {
         $phone = preg_replace('/\D+/', '', (string) $transaksi->pelanggan?->no_telp) ?? '';
-        if ($phone === '') return null;
+        if ($phone === '') {
+            return null;
+        }
 
         if (str_starts_with($phone, '0')) {
             $phone = '62'.substr($phone, 1);

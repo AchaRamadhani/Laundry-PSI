@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\TrackingToken;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Support\TrackingToken;
 
 class Transaksi extends Model
 {

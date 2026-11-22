@@ -10,6 +10,7 @@ use Throwable;
 class LaundryDateFormatter
 {
     private const DEFAULT_FORMAT = 'd/m/Y';
+
     private const AVAILABLE_FORMATS = [
         'd/m/Y' => 'DD/MM/YYYY',
         'd-m-Y' => 'DD-MM-YYYY',

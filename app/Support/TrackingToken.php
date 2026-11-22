@@ -12,7 +12,9 @@ use App\Models\Transaksi;
 class TrackingToken
 {
     private const TOKEN_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
     private const RANDOM_LENGTH = 12;
+
     private const PHONE_HASH_LENGTH = 8;
 
     public static function forTransaction(Transaksi $transaksi): string

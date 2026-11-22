@@ -51,9 +51,9 @@ class NotaDigitalController extends Controller
         abort_if($transaksi === null, 404);
 
         return $transaksi->load([
-                'pelanggan:id,nama_pelanggan,no_telp',
-                'detailTransaksi.paketLaundry:id,nama_paket,kategori',
-            ]);
+            'pelanggan:id,nama_pelanggan,no_telp',
+            'detailTransaksi.paketLaundry:id,nama_paket,kategori',
+        ]);
     }
 
     /** @return array<string, mixed> */
@@ -66,7 +66,7 @@ class NotaDigitalController extends Controller
         $catatanLines = $this->wrapNote($transaksi->catatan);
         $detailCount = max(1, $transaksi->detailTransaksi->count());
         $trackingUrl = route('tracking.token', ['token' => $trackingToken]);
-        $qrSvg = (new Writer(new ImageRenderer(new RendererStyle(240, 2), new SvgImageBackEnd())))
+        $qrSvg = (new Writer(new ImageRenderer(new RendererStyle(240, 2), new SvgImageBackEnd)))
             ->writeString(route('home'));
         $logoPath = public_path('images/logo-g-laundry-footer.png');
         $logoDataUri = is_file($logoPath)
@@ -103,6 +103,7 @@ class NotaDigitalController extends Controller
         foreach (explode("\n", $note) as $paragraph) {
             if ($paragraph === '') {
                 $lines[] = '';
+
                 continue;
             }
 
