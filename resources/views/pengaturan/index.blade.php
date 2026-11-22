@@ -45,15 +45,15 @@
                     <div class="settings-business-grid">
                         <label class="settings-field">
                             <span>Informasi Laundry</span>
-                            <input name="laundry_name" value="{{ old('laundry_name', $settings->laundry_name ?? '') }}" placeholder="Nama laundry" maxlength="120">
+                            <input name="laundry_name" value="{{ old('laundry_name', $settings->laundry_name ?? '') }}" placeholder="{{ $laundryName }}" maxlength="120">
                         </label>
                         <label class="settings-field">
                             <span>Nomor WhatsApp</span>
-                            <div class="settings-input-icon"><span class="settings-whatsapp-icon"><x-icons.whatsapp /></span><input name="whatsapp_number" value="{{ old('whatsapp_number', $settings->whatsapp_number ?? '') }}" placeholder="08xx-xxxx-xxxx" maxlength="30" inputmode="tel"></div>
+                            <div class="settings-input-icon"><span class="settings-whatsapp-icon"><x-icons.whatsapp /></span><input name="whatsapp_number" value="{{ old('whatsapp_number', $settings->whatsapp_number ?? '') }}" placeholder="{{ $whatsappDisplay }}" maxlength="30" inputmode="tel"></div>
                         </label>
                         <label class="settings-field settings-field-wide">
                             <span>Alamat</span>
-                            <input name="address" value="{{ old('address', $settings->address ?? '') }}" placeholder="Alamat laundry" maxlength="500">
+                            <input name="address" value="{{ old('address', $settings->address ?? '') }}" placeholder="{{ $address }}" maxlength="500">
                         </label>
                         <div class="settings-hours settings-field-wide">
                             <span class="settings-field-label">Jadwal Operasional</span>
@@ -76,18 +76,6 @@
             <div class="settings-bottom-grid">
                 <section class="settings-panel settings-preferences" aria-labelledby="settings-preferences-title">
                     <h2 id="settings-preferences-title">Preferensi Sistem</h2>
-                    <input type="hidden" name="notify_browser" value="0">
-                    <label class="settings-preference-row">
-                        <span class="settings-preference-icon" aria-hidden="true">♧</span>
-                        <span class="settings-preference-copy"><strong>Notifikasi Browser</strong><small>Tampilkan notifikasi pada browser</small></span>
-                        <span class="settings-switch"><input type="checkbox" name="notify_browser" value="1" @checked(old('notify_browser', $settings->notify_browser ?? true))><i></i></span>
-                    </label>
-                    <input type="hidden" name="notify_message" value="0">
-                    <label class="settings-preference-row">
-                        <span class="settings-preference-icon settings-message-icon" aria-hidden="true">▤</span>
-                        <span class="settings-preference-copy"><strong>Notifikasi Pesan</strong><small>Terima notifikasi pesan dari sistem</small></span>
-                        <span class="settings-switch"><input type="checkbox" name="notify_message" value="1" @checked(old('notify_message', $settings->notify_message ?? true))><i></i></span>
-                    </label>
                     <label class="settings-preference-row">
                         <span class="settings-preference-icon settings-calendar-icon" aria-hidden="true">▣</span>
                         <span class="settings-preference-copy"><strong>Format Tanggal</strong><small>Indonesia/British, ISO 8601, atau Amerika</small></span>

@@ -1,0 +1,6 @@
+Pemasangan:
+1. Ekstrak ZIP langsung ke root folder Laundry-PSI.
+2. Timpa public/css/admin.css saat diminta.
+3. Muat ulang halaman Pengaturan dengan Ctrl+F5 agar CSS terbaru terbaca.
+
+ZIP hanya berisi file CSS untuk merapatkan panel Preferensi Sistem yang kini berisi Format Tanggal dan Konfirmasi Logout.

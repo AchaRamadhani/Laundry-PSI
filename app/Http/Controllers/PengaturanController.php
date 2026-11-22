@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LaundrySetting;
 use App\Support\LaundryDateFormatter;
+use App\Support\WhatsAppContact;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,16 +23,20 @@ class PengaturanController extends Controller
             'break_start' => '12:00',
             'break_end' => '13:00',
             'closing_time' => '21:00',
-            'notify_browser' => true,
-            'notify_message' => true,
             'date_format' => 'd/m/Y',
             'confirm_logout' => true,
         ]);
 
+        $publicInfo = [
+            'laundryName' => trim((string) ($settings->laundry_name ?: "G'Laundry")),
+            'whatsappDisplay' => WhatsAppContact::forAdmin($settings)['whatsappDisplay'],
+            'address' => $settings->address ?: 'Jl. Poros Hartaco Indah, Kel. Sudiang Raya, Kec. Biringkanaya, Kota Makassar, Sulawesi Selatan 90242',
+        ];
+
         return view('pengaturan.index', [
             'settings' => $settings,
             'admin' => auth()->user(),
-        ]);
+        ] + $publicInfo);
     }
 
     public function update(Request $request): RedirectResponse
@@ -45,8 +50,6 @@ class PengaturanController extends Controller
             'break_end' => ['required', 'date_format:H:i', 'after:break_start'],
             'closing_time' => ['required', 'date_format:H:i', 'after:break_end'],
             'completion_message' => ['nullable', 'string', 'max:3000'],
-            'notify_browser' => ['required', 'boolean'],
-            'notify_message' => ['required', 'boolean'],
             'date_format' => ['required', Rule::in(array_keys(LaundryDateFormatter::availableFormats()))],
             'confirm_logout' => ['required', 'boolean'],
             'current_password' => ['nullable', 'required_with:new_password', 'current_password'],

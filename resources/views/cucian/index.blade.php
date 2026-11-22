@@ -152,7 +152,7 @@
                                         <div class="cucian-row-actions">
                                             <a href="{{ route('cucian.show', $item) }}" class="row-action view" aria-label="Lihat {{ $item->no_nota }}" title="Lihat detail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a>
                                             <a href="{{ route('cucian.edit', $item) }}" class="row-action edit" aria-label="Ubah {{ $item->no_nota }}" title="Ubah data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.8 4.8L8 20l11.6-11.6-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg></a>
-                                            <form action="{{ route('cucian.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data cucian {{ $item->no_nota }}?')">
+                                            <form class="js-delete-confirm-form" action="{{ route('cucian.destroy', $item) }}" method="POST" data-delete-item="{{ $item->no_nota }}">
                                                 @csrf @method('DELETE')
                                                 <button class="row-action delete" type="submit" aria-label="Hapus {{ $item->no_nota }}" title="Hapus data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"/></svg></button>
                                             </form>
@@ -240,4 +240,94 @@
             </aside>
         </section>
     </div>
+
+    <div class="delete-confirm-modal-backdrop" id="cucianDeleteConfirmModal" hidden>
+        <section class="delete-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="cucianDeleteConfirmTitle" aria-describedby="cucianDeleteConfirmDescription" tabindex="-1">
+            <img class="delete-confirm-modal-logo" src="{{ asset('images/logo-g-laundry.png') }}" alt="Logo G'Laundry">
+            <h2 id="cucianDeleteConfirmTitle">Hapus data cucian?</h2>
+            <p class="delete-confirm-modal-description" id="cucianDeleteConfirmDescription">Apakah Anda yakin ingin menghapus data cucian dengan nomor nota berikut?</p>
+            <div class="delete-confirm-modal-identity">
+                <p>Nomor nota: <strong id="cucianDeleteConfirmItem"></strong></p>
+            </div>
+            <hr>
+            <div class="delete-confirm-modal-actions">
+                <button class="delete-confirm-cancel" id="cucianDeleteConfirmCancel" type="button">Batal</button>
+                <button class="delete-confirm-accept" id="cucianDeleteConfirmAccept" type="button">Ya, Hapus</button>
+            </div>
+            <hr>
+            <p class="delete-confirm-modal-note">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s9-4.2 9-11V5l-9-3-9 3v6c0 6.8 9 11 9 11Z"/><path d="m8 12 2.5 2.5L16 9"/></svg>
+                <span>Data cucian yang dihapus tidak dapat dikembalikan.</span>
+            </p>
+        </section>
+    </div>
+
+    <script>
+        (() => {
+            const modal = document.getElementById('cucianDeleteConfirmModal');
+            if (!modal) return;
+
+            const itemLabel = document.getElementById('cucianDeleteConfirmItem');
+            const cancelButton = document.getElementById('cucianDeleteConfirmCancel');
+            const acceptButton = document.getElementById('cucianDeleteConfirmAccept');
+            let pendingForm = null;
+            let pendingSubmitter = null;
+
+            const closeModal = (restoreFocus = true) => {
+                modal.hidden = true;
+                document.body.classList.remove('delete-confirm-modal-open');
+                const trigger = pendingSubmitter;
+                pendingForm = null;
+                pendingSubmitter = null;
+                if (restoreFocus) trigger?.focus();
+            };
+
+            document.querySelectorAll('.js-delete-confirm-form').forEach((form) => {
+                form.addEventListener('submit', (event) => {
+                    if (form.dataset.confirmed === 'true') {
+                        delete form.dataset.confirmed;
+                        return;
+                    }
+
+                    event.preventDefault();
+                    pendingForm = form;
+                    pendingSubmitter = event.submitter || form.querySelector('button[type="submit"]');
+                    itemLabel.textContent = form.dataset.deleteItem || '—';
+                    modal.hidden = false;
+                    document.body.classList.add('delete-confirm-modal-open');
+                    cancelButton.focus();
+                });
+            });
+
+            cancelButton.addEventListener('click', () => closeModal());
+            acceptButton.addEventListener('click', () => {
+                if (!pendingForm) return;
+                const form = pendingForm;
+                const submitter = pendingSubmitter;
+                form.dataset.confirmed = 'true';
+                closeModal(false);
+                form.requestSubmit(submitter || undefined);
+            });
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) closeModal();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (modal.hidden) return;
+                if (event.key === 'Escape') {
+                    closeModal();
+                } else if (event.key === 'Tab') {
+                    const focusable = [cancelButton, acceptButton];
+                    if (event.shiftKey && document.activeElement === focusable[0]) {
+                        event.preventDefault();
+                        focusable[1].focus();
+                    } else if (!event.shiftKey && document.activeElement === focusable[1]) {
+                        event.preventDefault();
+                        focusable[0].focus();
+                    }
+                }
+            });
+        })();
+    </script>
 </x-layouts::app>

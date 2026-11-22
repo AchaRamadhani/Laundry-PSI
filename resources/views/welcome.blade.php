@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ffffff">
-    <meta name="description" content="Selamat datang di G'Laundry, layanan laundry yang praktis dan terpercaya untuk pakaian Anda.">
-    <title>G'Laundry | Selamat Datang</title>
+    <meta name="description" content="Selamat datang di {{ $laundryName }}, layanan laundry yang praktis dan terpercaya untuk pakaian Anda.">
+    <title>{{ $laundryName }} | Selamat Datang</title>
     <link rel="icon" href="{{ asset('images/logo-g-laundry.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('css/typography.css') }}?v={{ filemtime(public_path('css/typography.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
@@ -13,8 +13,8 @@
 <body>
     <div class="site-frame">
         <header class="site-header">
-            <a class="brand" href="{{ route('home') }}" aria-label="G'Laundry, beranda">
-                <img src="{{ asset('images/logo-g-laundry.png') }}" alt="G'Laundry">
+            <a class="brand" href="{{ route('home') }}" aria-label="{{ $laundryName }}, beranda">
+                <img src="{{ asset('images/logo-g-laundry.png') }}" alt="{{ $laundryName }}">
             </a>
 
             <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Buka navigasi">
@@ -39,7 +39,7 @@
                 <div class="hero-copy welcome-hero-copy">
                     <div class="hero-text">
                         <p class="eyebrow">Laundry bersih, rapi, dan wangi</p>
-                        <h1 id="hero-title">Selamat Datang di <span>G'Laundry</span></h1>
+                        <h1 id="hero-title">Selamat Datang di <span>{{ $laundryName }}</span></h1>
                         <p class="hero-description">Kami merawat pakaian harian Anda dengan teliti agar bersih, nyaman, dan siap dipakai kembali.</p>
                         <div class="welcome-actions">
                             <a class="welcome-primary" href="{{ route('layanan.index') }}">Lihat Layanan</a>

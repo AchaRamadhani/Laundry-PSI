@@ -14,8 +14,10 @@ class HomeController extends Controller
         $settings = LaundrySetting::query()->first();
         $whatsappData = WhatsAppContact::forAdmin($settings);
         $operationalData = OperationalHours::forSettings($settings);
+        $laundryName = trim((string) ($settings?->laundry_name ?: "G'Laundry"));
 
         return view('welcome', array_merge($operationalData, [
+            'laundryName' => $laundryName,
             'address' => $settings?->address ?: 'Jl. Poros Hartaco Indah, Kel. Sudiang Raya, Kec. Biringkanaya, Kota Makassar, Sulawesi Selatan 90242',
         ], $whatsappData));
     }

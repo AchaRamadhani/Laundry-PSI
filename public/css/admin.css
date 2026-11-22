@@ -3661,3 +3661,71 @@ html { min-height: 100%; background: #e7e3e3; }
 
 .admin-main table .service-share small { text-align: center !important; }
 .admin-main table .paket-category-share { align-items: center; }
+
+/* Popup konfirmasi hapus data cucian dan paket laundry. */
+.delete-confirm-modal-open { overflow: hidden; }
+.delete-confirm-modal-backdrop[hidden] { display: none !important; }
+.delete-confirm-modal-backdrop {
+    position: fixed;
+    z-index: 10020;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 18px;
+    background: rgb(33 38 52 / 42%);
+}
+
+.delete-confirm-modal {
+    width: min(100%, 450px);
+    max-height: calc(100vh - 36px);
+    max-height: calc(100dvh - 36px);
+    overflow-y: auto;
+    padding: 15px 39px 19px;
+    color: #111318;
+    border: 2px solid #b7b7b7;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 16px 45px rgb(13 23 49 / 20%);
+    text-align: center;
+}
+
+.delete-confirm-modal-logo { display: block; width: 160px; height: 100px; margin: 0 auto 7px; object-fit: contain; }
+.delete-confirm-modal h2 { margin: 0; color: #101114; font-size: 20px; font-weight: 750; line-height: 1.25; }
+.delete-confirm-modal-description { margin: 10px 0 14px; color: #858585; font-size: 16px; line-height: 1.3; }
+.delete-confirm-modal-identity { margin: 0 0 15px; }
+.delete-confirm-modal-identity p { margin: 4px 0; color: #4d5362; font-size: 14px; line-height: 1.35; }
+.delete-confirm-modal-identity strong { color: #142247; font-weight: 750; overflow-wrap: anywhere; }
+.delete-confirm-modal hr { height: 1px; margin: 0; border: 0; background: #d1d1d1; }
+.delete-confirm-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; padding: 16px 0 18px; }
+.delete-confirm-modal-actions button { min-height: 39px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 600; transition: background .15s ease, color .15s ease, transform .15s ease; }
+.delete-confirm-modal-actions button:active { transform: translateY(1px); }
+.delete-confirm-cancel { color: #0649ec; border: 1px solid #0750ff; background: #fff; }
+.delete-confirm-cancel:hover { background: #f1f5ff; }
+.delete-confirm-accept { color: #fff; border: 1px solid #f11720; background: #f11720; }
+.delete-confirm-accept:hover { background: #d81019; }
+.delete-confirm-modal-actions button:focus-visible { outline: 3px solid rgb(8 70 233 / 35%); outline-offset: 2px; }
+.delete-confirm-modal-note { display: flex; min-height: 30px; align-items: center; gap: 7px; margin: 13px 0 0; color: #687894; text-align: left; }
+.delete-confirm-modal-note svg { width: 25px; height: 25px; flex: 0 0 25px; fill: none; stroke: #4777ff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.delete-confirm-modal-note span { font-size: 12px; line-height: 1.35; }
+
+@media (max-width: 520px) {
+    .delete-confirm-modal-backdrop { padding: 14px; }
+    .delete-confirm-modal { padding: 13px 20px 16px; }
+    .delete-confirm-modal h2 { font-size: 19px; }
+    .delete-confirm-modal-description { font-size: 14px; }
+    .delete-confirm-modal-actions { gap: 12px; }
+    .delete-confirm-modal-actions button { font-size: 13px; }
+    .delete-confirm-modal-note span { font-size: 11px; }
+}
+
+/* Keep the two remaining preferences compact and use matching icons. */
+.admin-main .settings-page .settings-panel.settings-preferences { align-self: start; }
+.admin-main .settings-page .settings-panel.settings-preferences .settings-preference-row { flex: 0 0 auto; }
+.admin-main .settings-page .settings-preference-row:nth-of-type(1) .settings-preference-icon {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23174bd5'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='3'%20y='5'%20width='18'%20height='16'%20rx='2'/%3E%3Cpath%20d='M16%203v4M8%203v4M3%2011h18'/%3E%3C/svg%3E");
+}
+.admin-main .settings-page .settings-preference-row:nth-of-type(2) .settings-preference-icon {
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23174bd5'%20stroke-width='1.8'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M12%2022s8-4%208-11V5l-8-3-8%203v6c0%207%208%2011%208%2011z'/%3E%3Cpath%20d='m9%2012%202%202%204-4'/%3E%3C/svg%3E");
+}

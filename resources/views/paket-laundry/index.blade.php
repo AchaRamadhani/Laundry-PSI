@@ -64,7 +64,7 @@
                             <div class="paket-card-actions">
                                 <a href="{{ route('paket-laundry.show', $paket) }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Lihat</a>
                                 <a href="{{ route('paket-laundry.edit', $paket) }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16-.8 4.8L8 20l11.6-11.6-4-4L4 16Z"/><path d="m13.8 6.2 4 4"/></svg>Edit</a>
-                                <form action="{{ route('paket-laundry.destroy', $paket) }}" method="POST" onsubmit="return confirm('Hapus paket {{ $paket->nama_paket }}?')">@csrf @method('DELETE')<button type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"/></svg>Hapus</button></form>
+                                <form class="js-delete-confirm-form" action="{{ route('paket-laundry.destroy', $paket) }}" method="POST" data-delete-item="{{ $paket->nama_paket }}">@csrf @method('DELETE')<button type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"/></svg>Hapus</button></form>
                             </div>
                         </article>
                     @empty
@@ -109,4 +109,94 @@
             </aside>
         </section>
     </div>
+
+    <div class="delete-confirm-modal-backdrop" id="paketDeleteConfirmModal" hidden>
+        <section class="delete-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="paketDeleteConfirmTitle" aria-describedby="paketDeleteConfirmDescription" tabindex="-1">
+            <img class="delete-confirm-modal-logo" src="{{ asset('images/logo-g-laundry.png') }}" alt="Logo G'Laundry">
+            <h2 id="paketDeleteConfirmTitle">Hapus paket laundry?</h2>
+            <p class="delete-confirm-modal-description" id="paketDeleteConfirmDescription">Apakah Anda yakin ingin menghapus paket laundry berikut?</p>
+            <div class="delete-confirm-modal-identity">
+                <p>Nama paket: <strong id="paketDeleteConfirmItem"></strong></p>
+            </div>
+            <hr>
+            <div class="delete-confirm-modal-actions">
+                <button class="delete-confirm-cancel" id="paketDeleteConfirmCancel" type="button">Batal</button>
+                <button class="delete-confirm-accept" id="paketDeleteConfirmAccept" type="button">Ya, Hapus</button>
+            </div>
+            <hr>
+            <p class="delete-confirm-modal-note">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s9-4.2 9-11V5l-9-3-9 3v6c0 6.8 9 11 9 11Z"/><path d="m8 12 2.5 2.5L16 9"/></svg>
+                <span>Paket yang dihapus tidak dapat dikembalikan.</span>
+            </p>
+        </section>
+    </div>
+
+    <script>
+        (() => {
+            const modal = document.getElementById('paketDeleteConfirmModal');
+            if (!modal) return;
+
+            const itemLabel = document.getElementById('paketDeleteConfirmItem');
+            const cancelButton = document.getElementById('paketDeleteConfirmCancel');
+            const acceptButton = document.getElementById('paketDeleteConfirmAccept');
+            let pendingForm = null;
+            let pendingSubmitter = null;
+
+            const closeModal = (restoreFocus = true) => {
+                modal.hidden = true;
+                document.body.classList.remove('delete-confirm-modal-open');
+                const trigger = pendingSubmitter;
+                pendingForm = null;
+                pendingSubmitter = null;
+                if (restoreFocus) trigger?.focus();
+            };
+
+            document.querySelectorAll('.js-delete-confirm-form').forEach((form) => {
+                form.addEventListener('submit', (event) => {
+                    if (form.dataset.confirmed === 'true') {
+                        delete form.dataset.confirmed;
+                        return;
+                    }
+
+                    event.preventDefault();
+                    pendingForm = form;
+                    pendingSubmitter = event.submitter || form.querySelector('button[type="submit"]');
+                    itemLabel.textContent = form.dataset.deleteItem || '—';
+                    modal.hidden = false;
+                    document.body.classList.add('delete-confirm-modal-open');
+                    cancelButton.focus();
+                });
+            });
+
+            cancelButton.addEventListener('click', () => closeModal());
+            acceptButton.addEventListener('click', () => {
+                if (!pendingForm) return;
+                const form = pendingForm;
+                const submitter = pendingSubmitter;
+                form.dataset.confirmed = 'true';
+                closeModal(false);
+                form.requestSubmit(submitter || undefined);
+            });
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) closeModal();
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (modal.hidden) return;
+                if (event.key === 'Escape') {
+                    closeModal();
+                } else if (event.key === 'Tab') {
+                    const focusable = [cancelButton, acceptButton];
+                    if (event.shiftKey && document.activeElement === focusable[0]) {
+                        event.preventDefault();
+                        focusable[1].focus();
+                    } else if (!event.shiftKey && document.activeElement === focusable[1]) {
+                        event.preventDefault();
+                        focusable[0].focus();
+                    }
+                }
+            });
+        })();
+    </script>
 </x-layouts::app>
