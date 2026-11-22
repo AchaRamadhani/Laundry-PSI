@@ -11,7 +11,7 @@
 html { min-height: 100%; background: #e7e3e3; }
 .admin-body, .admin-body * { box-sizing: border-box; }
 .admin-body .whatsapp-icon { fill: currentColor !important; stroke: none !important; }
-.admin-body { min-height: 100vh; min-height: 100dvh; margin: 0; padding: 0; color: var(--admin-text); background: #e7e3e3; font-family: Arial, Helvetica, sans-serif; }
+.admin-body { min-height: 100vh; min-height: 100dvh; margin: 0; padding: 0; color: var(--admin-text); color-scheme: light; background: #e7e3e3; font-family: var(--g-laundry-font-family, Inter, "Segoe UI", system-ui, sans-serif); }
 .admin-shell { display: grid; grid-template-columns: 202px minmax(0, 1fr); align-items: start; width: 100%; min-height: 100vh; min-height: 100dvh; margin: 0; overflow: visible; background: #fff; box-shadow: none; }
 
 .admin-sidebar { position: sticky; z-index: 40; top: 0; display: flex; height: 100vh; height: 100dvh; min-height: 100vh; min-height: 100dvh; align-self: start; flex-direction: column; overflow-y: auto; padding: 16px 14px 14px; background: #fff; border-right: 1px solid #e5e6eb; }
@@ -35,8 +35,8 @@ html { min-height: 100%; background: #e7e3e3; }
 .admin-search input { width: 100%; min-width: 0; padding: 0; color: #374151; border: 0; outline: 0; background: transparent; font: inherit; font-size: 12px; }
 .admin-search input::placeholder { color: #adb2bd; }
 .admin-profile { display: flex; min-width: 188px; height: 51px; align-items: center; gap: 11px; padding: 4px 11px; border: 1px solid #e0e2e7; background: #fff; }
-.admin-avatar { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; color: #0871f5; border-radius: 50%; background: #edf5ff; }
-.admin-avatar svg { width: 30px; height: 30px; fill: currentColor; }
+.admin-avatar { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; overflow: hidden; color: #0871f5; border-radius: 50%; background: #edf5ff; }
+.admin-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 32%; }
 .admin-profile-text { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 3px; }
 .admin-profile-text strong { overflow: hidden; color: #161a22; font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .admin-profile-text small { color: #a0a3ab; font-size: 10px; }
@@ -1143,7 +1143,8 @@ html { min-height: 100%; background: #e7e3e3; }
 .settings-profile-card h2, .settings-business h2, .settings-panel h2 { margin: 0; color: #151922; font-size: 14px; font-weight: 700; }
 .settings-profile-identity { display: flex; align-items: center; flex-direction: column; padding: 11px 0 20px; }
 .settings-large-avatar { display: grid; width: 120px; height: 120px; place-items: center; margin-bottom: 10px; color: #0871f5; border-radius: 50%; background: #eaf3ff; }
-.settings-large-avatar svg { width: 90px; height: 90px; fill: currentColor; }
+.settings-large-avatar { overflow: hidden; }
+.settings-large-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 32%; }
 .settings-profile-identity strong { color: #11141b; font-size: 14px; }
 .settings-profile-identity > span:last-child { margin-top: 5px; color: #858990; font-size: 12px; }
 .settings-account-info { padding-top: 12px; border-top: 1px solid #d6d7db; }
@@ -1218,7 +1219,7 @@ html { min-height: 100%; background: #e7e3e3; }
     .settings-profile-card h2 { grid-column: 1 / -1; }
     .settings-profile-identity { padding: 4px 0; }
     .settings-large-avatar { width: 88px; height: 88px; }
-    .settings-large-avatar svg { width: 68px; height: 68px; }
+    .settings-large-avatar img { width: 100%; height: 100%; }
     .settings-account-info { width: 100%; padding: 10px 0 0; border-top: 0; }
     .settings-business { padding: 10px 3px 0; }
 }
@@ -1403,6 +1404,13 @@ html { min-height: 100%; background: #e7e3e3; }
 .paket-usage-heading p { font-size: 12px !important; }
 .metric-copy strong, .cucian-metric strong, .transaksi-metric strong,
 .pelanggan-metric strong, .paket-metric strong, .segmentasi-metric strong { font-size: 24px !important; }
+.metric-copy strong, .cucian-metric strong, .transaksi-metric strong,
+.pelanggan-metric strong, .paket-metric strong, .segmentasi-metric strong,
+.summary-value strong, .total-cell, .selected-payment-summary strong {
+    font-weight: 700;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "tnum" 1;
+}
 .metric-copy strong.metric-currency { font-size: clamp(18px, 1.55vw, 23px) !important; }
 .order-status, .cucian-status, .update-status-badge, .segment-pill, .paket-state { min-height: 23px; padding: 3px 8px; font-size: 11px !important; }
 
@@ -1670,6 +1678,7 @@ html { min-height: 100%; background: #e7e3e3; }
     width: 100%;
     height: 40px;
     min-height: 40px;
+    padding: 0;
     margin: 0;
 }
 .admin-main :is(.cucian-search-field, .transaksi-search-field,
@@ -1688,15 +1697,25 @@ html { min-height: 100%; background: #e7e3e3; }
 .admin-main :is(.cucian-month-field, .transaksi-month-field,
     .update-status-month, .pelanggan-month) {
     position: relative;
+    display: block;
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
     height: 40px;
     min-height: 40px;
-    padding: 0 31px 0 10px;
+    padding: 0;
     border: 1px solid #d7deea;
     border-radius: 6px;
     background: #fff;
+}
+.admin-main :is(.cucian-month-field, .transaksi-month-field,
+    .update-status-month, .pelanggan-month) > svg {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 .admin-main :is(.cucian-month-field, .transaksi-month-field,
     .update-status-month, .pelanggan-month)::after {
@@ -1717,11 +1736,14 @@ html { min-height: 100%; background: #e7e3e3; }
     width: 100%;
     height: 100%;
     min-height: 0;
-    padding: 0;
+    margin: 0;
+    padding: 0 31px 0 34px;
     font-size: 13px !important;
     appearance: none;
     border: 0;
     border-radius: 0;
+    outline: none !important;
+    box-shadow: none !important;
     background: transparent;
     background-image: none;
 }
@@ -2143,7 +2165,7 @@ html { min-height: 100%; background: #e7e3e3; }
 
 .admin-main .settings-page .settings-date-select {
     box-sizing: border-box;
-    width: 144px;
+    width: 190px;
     height: 40px;
     padding: 0 10px;
     border-color: #d7dce6;
@@ -2248,7 +2270,7 @@ html { min-height: 100%; background: #e7e3e3; }
     .admin-main .settings-page .settings-profile-card,
     .admin-main .settings-page .settings-panel { padding: 16px; }
 
-    .admin-main .settings-page .settings-date-select { width: min(144px, 42vw); }
+    .admin-main .settings-page .settings-date-select { width: min(190px, 52vw); }
 
     .admin-main .settings-page .settings-save-button { width: 100%; }
 }
@@ -2811,3 +2833,831 @@ html { min-height: 100%; background: #e7e3e3; }
 .admin-main .pelanggan-page .pelanggan-filters .pelanggan-month select:focus-visible {
     outline: 0;
 }
+
+.payment-settlement-backdrop {
+    position: fixed;
+    z-index: 1300;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgb(15 23 42 / 52%);
+    backdrop-filter: blur(3px);
+}
+
+.payment-settlement-backdrop[hidden] { display: none; }
+
+.payment-settlement-dialog {
+    width: min(100%, 440px);
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgb(15 23 42 / 26%);
+    color: #172554;
+}
+
+.payment-settlement-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border-radius: 16px;
+    background: #eaf2ff;
+    color: #0754e8;
+}
+
+.payment-settlement-icon svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.payment-settlement-dialog h2 { margin: 16px 0 7px; color: #172554; font-size: 21px; }
+.payment-settlement-dialog > p { margin: 0; color: #64748b; font-size: 14px; line-height: 1.55; }
+.payment-settlement-options { display: grid; gap: 10px; margin: 20px 0 0; padding: 0; border: 0; }
+.payment-settlement-options legend { margin-bottom: 9px; color: #334155; font-size: 13px; font-weight: 700; }
+.payment-settlement-options label { display: flex; min-height: 62px; align-items: center; gap: 12px; padding: 11px 13px; border: 1px solid #dbe3ef; border-radius: 11px; cursor: pointer; }
+.payment-settlement-options label:has(input:checked) { border-color: #1760ed; background: #f2f7ff; box-shadow: 0 0 0 2px rgb(23 96 237 / 10%); }
+.payment-settlement-options input { width: 17px; height: 17px; accent-color: #0754e8; }
+.payment-settlement-options span { display: grid; gap: 3px; }
+.payment-settlement-options strong { color: #172554; font-size: 14px; }
+.payment-settlement-options small { color: #778399; font-size: 12px; }
+.payment-settlement-dialog .payment-settlement-error { margin-top: 10px; color: #b42318; font-size: 13px; }
+.payment-settlement-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.payment-settlement-actions button { min-height: 42px; padding: 0 15px; border: 1px solid #d4dce8; border-radius: 9px; background: #fff; color: #334155; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.payment-settlement-actions [data-payment-confirm] { border-color: #0754e8; background: #0754e8; color: #fff; }
+
+@media (max-width: 520px) {
+    .payment-settlement-dialog { padding: 22px 18px; }
+    .payment-settlement-actions button { flex: 1; padding: 0 9px; }
+}
+
+.cucian-field select:disabled,
+.cucian-figma-field select:disabled {
+    background-color: #f1f4f8;
+    color: #778196;
+    cursor: not-allowed;
+}
+
+.payment-required-mark[hidden] { display: none; }
+
+.selected-payment-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 9px 10px;
+    border: 1px solid #dbe7ff;
+    border-radius: 9px;
+    background: #f5f8ff;
+}
+
+.selected-payment-summary > div { display: grid; min-width: 0; gap: 4px; }
+.selected-payment-summary small { color: #74819a; font-size: 10px; }
+.selected-payment-summary strong { color: #263553; font-size: 11px; overflow-wrap: anywhere; }
+.cucian-info-grid .tracking-token-value { overflow-wrap: anywhere; word-break: break-word; }
+
+.date-input-control { position: relative; width: 100%; }
+.date-input-control > [data-date-display] { padding-right: 42px !important; }
+.date-picker-trigger { position: absolute; top: 50%; right: 6px; display: grid; width: 30px; height: 30px; place-items: center; padding: 0; transform: translateY(-50%); border: 0; border-radius: 6px; background: transparent; color: #53627a; cursor: pointer; }
+.date-picker-trigger:hover { background: #eef4ff; color: #0754e8; }
+.date-picker-trigger svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.date-input-control > .date-picker-native { position: absolute !important; z-index: -1; width: 1px !important; height: 1px !important; min-height: 1px !important; padding: 0 !important; overflow: hidden; opacity: 0; pointer-events: none; clip-path: inset(50%); }
+
+.status-completion-whatsapp {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    gap: 8px;
+    margin: 9px 0 2px;
+    padding: 0 12px;
+    border: 1px solid #a8dfbf;
+    border-radius: 8px;
+    background: #f0fbf4;
+    color: #16834f;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.status-completion-whatsapp svg { width: 17px; height: 17px; flex: 0 0 17px; }
+
+.update-status-table .status-note-input {
+    color-scheme: light;
+    color: #263553 !important;
+    border-color: #d7deea;
+    background-color: #fff !important;
+}
+
+/* Customer type and existing customer lookup on the new laundry form. */
+.customer-selection-section {
+    margin-bottom: 22px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e6eaf2;
+}
+
+.customer-selection-heading {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 0 13px;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: #17277a;
+}
+
+.customer-selection-heading svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    fill: none;
+    stroke: #0754e8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.customer-selection-heading h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.customer-type-row {
+    display: grid;
+    grid-template-columns: minmax(115px, .55fr) minmax(300px, 1.15fr) minmax(250px, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.customer-type-label {
+    color: #171923;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.customer-type-label b { color: #e52435; }
+.cucian-figma-field > label { color: inherit; font: inherit; }
+.cucian-figma-field > label b { color: #e52435; }
+
+.customer-type-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.customer-type-option {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 12px;
+    border: 1px solid #d5dceb;
+    border-radius: 8px;
+    background: #fff;
+    color: #3a4561;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: border-color .16s ease, background-color .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+.customer-type-option:has(input:checked) {
+    border-color: #2862f2;
+    background: #f3f6ff;
+    color: #1235bf;
+    box-shadow: 0 0 0 2px rgb(40 98 242 / 8%);
+}
+
+.customer-type-option input {
+    width: 17px;
+    height: 17px;
+    min-height: 17px !important;
+    flex: 0 0 17px;
+    margin: 0;
+    padding: 0 !important;
+    accent-color: #0754e8;
+}
+
+.customer-mode-message {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 11px;
+    border: 1px solid #d9e4ff;
+    border-radius: 8px;
+    background: #f0f5ff;
+    color: #24428f;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.customer-mode-message svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    fill: none;
+    stroke: #0754e8;
+    stroke-linecap: round;
+    stroke-width: 1.8;
+}
+
+.existing-customer-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(270px, .85fr);
+    align-items: start;
+    gap: 18px;
+    margin-top: 16px;
+}
+
+.existing-customer-panel[hidden],
+.existing-customer-results[hidden],
+.existing-customer-selected[hidden],
+.existing-customer-feedback[hidden] { display: none !important; }
+
+.existing-customer-search-area,
+.existing-customer-search-area > .cucian-figma-field { min-width: 0; }
+
+.existing-customer-search-control {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 92px;
+    align-items: center;
+    gap: 8px;
+}
+
+.existing-customer-search-control > svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #153a9e;
+    stroke-linecap: round;
+    stroke-width: 1.8;
+}
+
+.cucian-figma-field .existing-customer-search-control input {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    min-width: 0;
+    height: 42px;
+    padding: 0 12px;
+    border-color: #cbd5e1;
+    background: #fff;
+    font-size: 13px !important;
+}
+
+.existing-customer-search-control > svg { z-index: 1; margin-left: 11px; pointer-events: none; }
+
+.existing-customer-search-control input { padding-left: 38px !important; }
+
+.existing-customer-search-control > button {
+    display: inline-flex;
+    min-height: 42px;
+    grid-column: 3;
+    grid-row: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 12px;
+    border: 1px solid #0754e8;
+    border-radius: 7px;
+    background: #0754e8;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.existing-customer-search-control > button:hover { background: #0646c8; }
+.existing-customer-search-control > button:disabled { opacity: .65; cursor: progress; }
+.existing-customer-search-control > button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+.existing-customer-search-area > .cucian-figma-field > small { min-height: 0; margin-top: 2px; }
+
+.existing-customer-feedback {
+    margin: 8px 0 0;
+    padding: 8px 10px;
+    border: 1px solid #dce6ff;
+    border-radius: 7px;
+    background: #f3f7ff;
+    color: #31509d;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.existing-customer-feedback.is-error {
+    border-color: #f3c7c7;
+    background: #fff5f5;
+    color: #b42318;
+}
+
+.existing-customer-results {
+    display: grid;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.existing-customer-results-heading {
+    margin: 0 0 1px;
+    color: #202c66;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.existing-customer-result {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 58px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 11px;
+    border: 1px solid #d9e1ef;
+    border-radius: 8px;
+    background: #fff;
+    color: #172554;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+}
+
+.existing-customer-result:hover,
+.existing-customer-result.is-selected {
+    border-color: #3976f6;
+    background: #f1f5ff;
+    box-shadow: 0 0 0 2px rgb(57 118 246 / 8%);
+}
+
+.existing-customer-result-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: #e8f1ff;
+    color: #0754e8;
+}
+
+.existing-customer-result-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.existing-customer-result-details { display: grid; min-width: 0; gap: 3px; }
+.existing-customer-result-details strong { overflow: hidden; color: #202c66; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.existing-customer-result-details small { color: #65718a; font-size: 11px; line-height: 1.35; overflow-wrap: anywhere; }
+.existing-customer-result-state { color: #18834b; font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+.existing-customer-selected {
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #9ddcb4;
+    border-radius: 8px;
+    background: #f1fbf4;
+}
+
+.existing-customer-selected h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 9px;
+    color: #16763c;
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.existing-customer-selected h3 svg { width: 18px; height: 18px; flex: 0 0 18px; fill: currentColor; stroke: #fff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.existing-customer-selected dl { display: grid; gap: 7px; margin: 0; }
+.existing-customer-selected dl > div { display: grid; grid-template-columns: minmax(98px, .8fr) minmax(0, 1.2fr); gap: 8px; font-size: 12px; line-height: 1.35; }
+.existing-customer-selected dt { color: #43516b; }
+.existing-customer-selected dd { min-width: 0; margin: 0; color: #202938; font-weight: 650; overflow-wrap: anywhere; }
+
+@media (max-width: 900px) {
+    .customer-type-row { grid-template-columns: minmax(110px, .5fr) minmax(260px, 1.2fr); }
+    .customer-mode-message { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+    .customer-type-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .customer-type-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .customer-mode-message { grid-column: auto; }
+    .existing-customer-panel { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}
+
+@media (max-width: 420px) {
+    .customer-selection-section { margin-bottom: 17px; padding-bottom: 16px; }
+    .customer-type-option { padding: 0 7px; font-size: 12px; }
+    .existing-customer-search-control { grid-template-columns: 18px minmax(0, 1fr) 74px; gap: 6px; }
+    .existing-customer-search-control > button { gap: 4px; padding-inline: 7px; font-size: 11px; }
+    .existing-customer-search-control > button svg { width: 14px; height: 14px; }
+    .existing-customer-selected dl > div { grid-template-columns: minmax(86px, .75fr) minmax(0, 1.25fr); }
+}
+.update-status-table .status-note-input::placeholder { color: #8490a4; opacity: 1; }
+.update-status-table .new-status-select { color-scheme: light; background-color: #fff; }
+.update-status-table-scroll,
+.status-progress-track { scrollbar-color: #c7d2e3 #f3f6fa; scrollbar-width: thin; }
+.update-status-table-scroll::-webkit-scrollbar,
+.status-progress-track::-webkit-scrollbar { height: 8px; }
+.update-status-table-scroll::-webkit-scrollbar-track,
+.status-progress-track::-webkit-scrollbar-track { border-radius: 99px; background: #f3f6fa; }
+.update-status-table-scroll::-webkit-scrollbar-thumb,
+.status-progress-track::-webkit-scrollbar-thumb { border-radius: 99px; background: #c7d2e3; }
+.update-customer-select-link { color: #273b75; font-weight: 600; text-decoration: none; }
+.update-customer-select-link:hover { color: #0846e9; text-decoration: underline; }
+.progress-step.skipped { color: #8792a4; }
+.progress-step.skipped .progress-step-icon { color: #9ba6b7; border-style: dashed; background: #f7f9fc; }
+.progress-step.skipped small { min-height: 34px; color: #77849a; font-size: 9px !important; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
+.status-completion-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 7px 0 4px; }
+.status-completion-actions .status-completion-whatsapp { margin: 0; }
+.status-whatsapp-hint { margin: 0 0 6px; color: #748198; font-size: 11px; line-height: 1.4; }
+.status-completion-sent {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    padding: 0 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    color: #344054;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 650;
+}
+.status-completion-sent:hover { border-color: #8ca9de; background: #f7faff; color: #1746b2; }
+.status-completion-sent-note { margin: 8px 0 5px; padding: 9px 10px; border: 1px solid #b8e4ca; border-radius: 8px; background: #effaf3; color: #167247; font-size: 12px; }
+
+/* Shared dropdown treatment for every admin page. */
+.admin-main select {
+    color-scheme: light;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.25;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.admin-main select option {
+    color: #263553;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: 13px !important;
+}
+.admin-main select:focus-visible {
+    border-color: #6e98f0;
+    outline: 0 !important;
+    box-shadow: 0 0 0 3px rgb(8 70 233 / 16%);
+}
+.admin-main select:disabled {
+    color: #778196;
+    background-color: #f1f4f8;
+    cursor: not-allowed;
+    opacity: 1;
+}
+.admin-main table select {
+    height: 36px;
+    min-height: 36px;
+}
+.admin-main .paket-modal-field select {
+    min-height: 40px;
+    appearance: none;
+}
+.admin-main :is(.dashboard-period, .chart-period-select, .dashboard-status-filter):focus-within {
+    border-color: #8aaef8;
+    box-shadow: 0 0 0 3px rgb(8 70 233 / 10%);
+}
+.admin-main :is(.dashboard-period, .chart-period-select, .dashboard-status-filter) select:focus-visible {
+    border-color: transparent;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 600px) {
+    .selected-payment-summary { grid-template-columns: 1fr; }
+}
+
+/* One dropdown appearance for every admin page. Menus are portaled to the body
+   so tables and panels cannot clip them, and their position stays below the field. */
+.admin-main .admin-select-control {
+    position: relative;
+    z-index: 1;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    border: 1px solid #d7deea;
+    border-radius: 7px;
+    background: #fff;
+    color: #263553;
+}
+.admin-main .admin-select-control.is-open { z-index: 80; }
+.admin-main .admin-select-control.admin-select-shell {
+    height: 100%;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+.admin-main .admin-select-control.admin-select-form-field { height: 42px; min-height: 42px; }
+.admin-main .admin-select-control.admin-select-table { height: 36px; min-height: 36px; padding: 0; }
+.admin-main .admin-select-control.admin-select-segment { width: 160px; height: 40px; padding: 0; }
+.admin-main .admin-select-control.settings-date-select { width: 190px; height: 40px; min-height: 40px; padding: 0; }
+.admin-main .admin-select-control .admin-native-select {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    min-height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+.admin-main .admin-select-trigger {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 11px;
+    overflow: hidden;
+    color: #263553;
+    border: 0;
+    border-radius: inherit;
+    outline: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.25;
+    text-align: left;
+}
+.admin-main .admin-select-trigger:disabled { color: #778196; background: #f1f4f8; cursor: not-allowed; }
+.admin-main .admin-select-trigger:focus-visible { color: #1746b2; outline: 0; }
+.admin-main .admin-select-value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-main .admin-select-arrow { width: 16px; height: 16px; flex: 0 0 16px; fill: none; stroke: #69758b; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.admin-main .admin-select-control:focus-within,
+.admin-main .admin-select-control.is-open,
+.admin-main .admin-select-control.has-error {
+    border-color: #8aaef8;
+    box-shadow: 0 0 0 3px rgb(8 70 233 / 10%);
+}
+.admin-main .admin-select-control.has-error { border-color: #e34c4c; box-shadow: 0 0 0 3px rgb(227 76 76 / 12%); }
+.admin-main .admin-select-control.has-error .admin-select-trigger { color: #a62b2b; }
+.admin-main .admin-select-control.admin-select-shell:focus-within,
+.admin-main .admin-select-control.admin-select-shell.is-open { border: 0; box-shadow: none; }
+
+.admin-main .admin-select-control.admin-select-form-field .admin-select-trigger { padding: 0 12px; }
+.admin-main .admin-select-control.admin-select-table .admin-select-trigger { padding: 0 9px; font-size: 13px; }
+.admin-main .admin-select-control.admin-select-segment .admin-select-trigger { padding: 0 10px; }
+.admin-main .admin-select-control.settings-date-select .admin-select-trigger { padding: 0 11px; }
+.admin-main :is(.cucian-filters, .transaksi-filters, .update-status-filters,
+    .pelanggan-filters, .paket-filters) > .admin-select-control { height: 40px; min-height: 40px; }
+.admin-main .dashboard-period > .admin-select-control { width: auto; flex: 1 1 auto; }
+.admin-main :is(.dashboard-period, .chart-period-select, .dashboard-status-filter,
+    .cucian-month-field, .transaksi-month-field, .update-status-month, .pelanggan-month) > .admin-select-control {
+    width: 100%;
+}
+.admin-main .dashboard-period > .admin-select-control .admin-select-trigger { padding: 0 25px 0 0; font-size: 14px; }
+.admin-main :is(.chart-period-select, .dashboard-status-filter) { box-sizing: border-box; height: 36px; gap: 0; padding: 0; }
+.admin-main .chart-period-select { width: 132px; flex: 0 0 132px; }
+.admin-main .dashboard-status-filter { width: 144px; flex: 0 0 144px; }
+.admin-main :is(.chart-period-select, .dashboard-status-filter) > .admin-select-control .admin-select-trigger { padding: 0 25px 0 10px; font-size: 12px; }
+.admin-main :is(.dashboard-period, .chart-period-select, .dashboard-status-filter) > .period-chevron,
+.admin-main :is(.chart-period-select, .dashboard-status-filter) > svg { display: none; }
+.admin-main :is(.cucian-month-field, .transaksi-month-field, .update-status-month, .pelanggan-month) > .admin-select-control .admin-select-trigger {
+    padding: 0 31px 0 34px;
+    font-size: 13px;
+}
+.admin-main :is(.cucian-month-field, .transaksi-month-field, .update-status-month, .pelanggan-month)::after { display: none; }
+.admin-main .dashboard-period:focus-within,
+.admin-main .chart-period-select:focus-within,
+.admin-main .dashboard-status-filter:focus-within,
+.admin-main :is(.cucian-month-field, .transaksi-month-field, .update-status-month, .pelanggan-month):focus-within {
+    border-color: #8aaef8;
+    box-shadow: 0 0 0 3px rgb(8 70 233 / 10%);
+}
+.admin-main :is(.dashboard-period, .chart-period-select, .dashboard-status-filter,
+    .cucian-month-field, .transaksi-month-field, .update-status-month, .pelanggan-month).admin-select-open {
+    border-color: #8aaef8;
+    box-shadow: 0 0 0 3px rgb(8 70 233 / 10%);
+}
+
+.admin-select-menu {
+    position: fixed;
+    z-index: 2000;
+    display: block;
+    min-width: 0;
+    padding: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 1px solid #d6ddeb;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgb(22 38 75 / 20%);
+    scrollbar-color: #aebbd2 #f4f7fc;
+    scrollbar-width: thin;
+}
+.admin-select-menu[hidden] { display: none !important; }
+.admin-select-option {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 11px;
+    color: #263553;
+    border: 0;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+    font: 14px/1.3 var(--g-laundry-font-family, Inter, "Segoe UI", system-ui, sans-serif);
+    text-align: left;
+}
+.admin-select-option:hover,
+.admin-select-option:focus-visible { color: #0846e9; background: #eef4ff; outline: 0; }
+.admin-select-option[aria-selected="true"] { color: #0846e9; background: #e7efff; font-weight: 700; }
+.admin-select-option:disabled { color: #9aa3b4; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+    .admin-main .chart-period-select { width: 126px; flex-basis: 126px; }
+    .admin-main .dashboard-status-filter { width: 138px; flex-basis: 138px; }
+    .admin-main .admin-select-control.settings-date-select { width: min(190px, 52vw); }
+    .admin-main .admin-select-control.admin-select-segment { width: 100%; }
+    .admin-select-option { min-height: 40px; }
+}
+
+/* Keep admin search fields as one unified control across pages. */
+.admin-search,
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search) {
+    box-sizing: border-box;
+    display: flex;
+    min-width: 0;
+    height: 42px;
+    min-height: 42px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: none;
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.admin-search svg,
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search) svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+}
+
+.admin-search input[type="search"],
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search) input[type="search"] {
+    box-sizing: border-box;
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    color: #374151;
+    border: 0 !important;
+    border-radius: 0;
+    outline: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    font-size: 13px;
+}
+
+.admin-search input[type="search"]::placeholder,
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search) input[type="search"]::placeholder {
+    color: #98a2b3;
+    opacity: 1;
+}
+
+.admin-search input[type="search"]::-webkit-search-cancel-button,
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search) input[type="search"]::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
+.admin-search:focus-within,
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search):focus-within {
+    border-color: #8aaef8;
+    box-shadow: 0 0 0 3px rgb(8 70 233 / 10%);
+}
+
+.admin-main :is(.cucian-search-field, .transaksi-search-field,
+    .update-status-search, .pelanggan-search, .paket-search, .segment-search) input[type="search"]:focus-visible {
+    outline: 0 !important;
+}
+
+.admin-main .update-status-filters {
+    grid-template-columns:
+        minmax(180px, 1.4fr)
+        minmax(130px, .8fr)
+        minmax(140px, .9fr)
+        minmax(145px, .8fr)
+        minmax(174px, .92fr);
+}
+
+.admin-main .update-status-filter-actions {
+    display: flex;
+    min-width: 0;
+    height: 42px;
+    gap: 8px;
+}
+
+.admin-main .update-status-filter-actions > button,
+.admin-main .update-status-reset-button {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 42px;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 10px;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.admin-main .update-status-filter-actions > button {
+    color: #fff;
+    border-color: #0745e3;
+    background: #0746e5;
+}
+
+.admin-main .update-status-reset-button {
+    color: #33415f;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-weight: 400;
+}
+
+.admin-main .update-status-filter-actions svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.admin-main .update-status-reset-icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    line-height: 1;
+}
+
+.admin-main .update-status-filter-actions > button:hover { background: #063ac7; }
+.admin-main .update-status-reset-button:hover { color: #0846e9; border-color: transparent; background: transparent; text-decoration: underline; }
+.admin-main .update-status-filter-actions :is(button, a):focus-visible { outline: 3px solid rgb(8 70 233 / 20%); outline-offset: 2px; }
+
+@media (max-width: 760px) {
+    .admin-main .update-status-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .admin-main .update-status-search,
+    .admin-main .update-status-month,
+    .admin-main .update-status-filter-actions { grid-column: 1 / -1; }
+}
+
+/* Center table headings and values consistently across the admin area. */
+.admin-main table th,
+.admin-main table td {
+    text-align: center !important;
+    vertical-align: middle;
+}
+
+.admin-main table :is(.cucian-row-actions, .transaksi-row-actions, .pelanggan-row-actions, .service-share) {
+    justify-content: center;
+}
+
+.admin-main table .service-share small { text-align: center !important; }
+.admin-main table .paket-category-share { align-items: center; }

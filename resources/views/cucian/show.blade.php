@@ -19,9 +19,11 @@
                 <div class="cucian-info-grid">
                     <div><small>Nama Pelanggan</small><strong>{{ $cucian->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</strong></div>
                     <div><small>Nomor Telepon</small><strong>{{ $cucian->pelanggan?->no_telp ?? '—' }}</strong></div>
-                    <div><small>Token Tracking</small><strong>{{ $cucian->tracking_token }}</strong></div>
-                    <div><small>Tanggal Masuk</small><strong>{{ \Carbon\Carbon::parse($cucian->tanggal_masuk)->format('d F Y') }}</strong></div>
-                    <div><small>Estimasi Selesai</small><strong>{{ $cucian->estimasi_selesai ? \Carbon\Carbon::parse($cucian->estimasi_selesai)->format('d F Y H.i') : 'Belum ditentukan' }}</strong></div>
+                    <div><small>Token Tracking</small><strong class="tracking-token-value">{{ $cucian->tracking_token }}</strong></div>
+                    <div><small>Tanggal Masuk</small><strong>{{ \App\Support\LaundryDateFormatter::format($cucian->tanggal_masuk) }}</strong></div>
+                    <div><small>Estimasi Selesai</small><strong>{{ \App\Support\LaundryDateFormatter::format($cucian->estimasi_selesai, true) }}</strong></div>
+                    <div><small>Status Pembayaran</small><strong>{{ $cucian->status_pembayaran_label }}</strong></div>
+                    <div><small>Metode Pembayaran</small><strong>{{ $cucian->metode_pembayaran_label }}</strong></div>
                 </div>
                 <h3 class="detail-subheading">Rincian Layanan</h3>
                 <div class="cucian-table-scroll">
@@ -44,7 +46,7 @@
                         @php($historyKey = strtolower($riwayat->status))
                         <div class="status-history-item">
                             <i style="--status-color: {{ $statusColors[$historyKey] ?? '#9aa4b4' }}"></i>
-                            <div><strong>{{ $statusLabels[$historyKey] ?? ucfirst($historyKey) }}</strong><small>{{ $riwayat->admin?->name ?? 'Admin' }}{{ $riwayat->catatan_status ? ' · ' . $riwayat->catatan_status : '' }}</small><time>{{ \Carbon\Carbon::parse($riwayat->waktu_status)->format('d M Y, H.i') }}</time></div>
+                            <div><strong>{{ $statusLabels[$historyKey] ?? ucfirst($historyKey) }}</strong><small>{{ $riwayat->admin?->name ?? 'Admin' }}{{ $riwayat->catatan_status ? ' · ' . $riwayat->catatan_status : '' }}</small><time>{{ \App\Support\LaundryDateFormatter::format($riwayat->waktu_status, true) }}</time></div>
                         </div>
                     @empty
                         <p>Belum ada catatan riwayat status.</p>

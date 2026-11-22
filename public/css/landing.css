@@ -19,7 +19,7 @@ body {
     padding: 0;
     background: #e8e3e3;
     color: var(--ink);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--g-laundry-font-family, Inter, "Segoe UI", system-ui, sans-serif);
     font-size: 14px;
 }
 
@@ -399,7 +399,7 @@ svg { display: block; }
 .public-footer-icon.whatsapp-icon-wrap { color: #079d5b; background: #e6f7ee; }
 .public-footer-copy { display: flex; min-width: 0; flex-direction: column; gap: 3px; }
 .public-footer-copy small { color: #dfebff; font-size: 9px; line-height: 1.25; }
-.public-footer-copy strong { overflow-wrap: anywhere; color: #fff; font-size: 12px; line-height: 1.3; }
+.public-footer-copy strong { overflow-wrap: anywhere; color: #fff; font-size: 12px; line-height: 1.3; font-variant-numeric: lining-nums tabular-nums; }
 .public-footer-status .public-footer-copy strong { width: fit-content; padding: 3px 10px; border: 1px solid rgb(126 255 192 / 60%); border-radius: 5px; color: #c7ffe1; background: rgb(0 167 105 / 18%); font-size: 11px; }
 .public-footer-status .public-footer-state.status-istirahat { color: #ffe3af; border-color: rgb(255 197 98 / 70%); background: rgb(255 170 40 / 16%); }
 .public-footer-status .public-footer-state.status-tutup { color: #ffd1d1; border-color: rgb(255 161 161 / 65%); background: rgb(255 73 73 / 15%); }

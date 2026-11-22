@@ -25,7 +25,7 @@
                     <span>Transaksi</span>
                 </a>
                 <a href="{{ route('update-status.index') }}" class="{{ request()->routeIs('update-status.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.5 9A7.5 7.5 0 0 1 18 6l2 2M4 16l2 2a7.5 7.5 0 0 0 12.5-3"/></svg>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11M9 12h11M9 19h11"/><path d="m3 5 1.5 1.5L7 4M3 12l1.5 1.5L7 11M3 19l1.5 1.5L7 18"/></svg>
                     <span>Update Status</span>
                 </a>
                 <a href="{{ route('pelanggan.index') }}" class="{{ request()->routeIs('pelanggan.*') ? 'active' : '' }}">
@@ -71,7 +71,7 @@
                 </label>
 
                 <div class="admin-profile" role="group" aria-label="Akun admin">
-                    <span class="admin-avatar" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="11" r="6"/><path d="M5 29v-3a11 11 0 0 1 22 0v3z"/></svg></span>
+                    <span class="admin-avatar" aria-hidden="true"><img src="{{ asset('images/contact-admin-illustration.png') }}" alt=""></span>
                     <span class="admin-profile-text"><strong>{{ auth()->user()->name ?? 'Admin Laundry' }}</strong><small>Administrator</small></span>
                 </div>
             </header>
@@ -107,6 +107,8 @@
     @endpersist
 
     @fluxScripts
+
+    <script src="{{ asset('js/admin-dropdowns.js') }}?v={{ filemtime(public_path('js/admin-dropdowns.js')) }}"></script>
 
     <script>
         let logoutTriggerButton = null;

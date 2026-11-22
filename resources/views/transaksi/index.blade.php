@@ -76,14 +76,7 @@
                                     $layananText = $item->detailTransaksi->map(fn ($detail) => $detail->paketLaundry?->nama_paket)->filter()->unique()->implode(', ');
                                     $jumlah = $item->detailTransaksi->sum('berat_qty');
                                     $isSatuan = $item->detailTransaksi->contains(fn ($detail) => strtolower($detail->paketLaundry?->kategori ?? '') === 'satuan');
-                                    $telepon = preg_replace('/\D+/', '', $item->pelanggan?->no_telp ?? '');
-                                    $telepon = str_starts_with($telepon, '0') ? '62' . substr($telepon, 1) : $telepon;
-                                    $barisNota = $item->detailTransaksi->map(function ($detail) {
-                                        $unit = strtolower($detail->paketLaundry?->kategori ?? '') === 'satuan' ? 'pcs' : 'kg';
-                                        return '- ' . ($detail->paketLaundry?->nama_paket ?? 'Layanan') . ': ' . number_format((float) $detail->berat_qty, 2, ',', '.') . ' ' . $unit . ' (Rp ' . number_format((float) $detail->subtotal, 0, ',', '.') . ')';
-                                    })->implode("\n");
-                                    $trackingUrl = route('tracking', ['token_tracking' => $item->tracking_token]);
-                                    $pesanNota = "Halo " . ($item->pelanggan?->nama_pelanggan ?? 'Pelanggan') . ", berikut nota G'Laundry Anda:\n\nNo. Nota: {$item->no_nota}\nToken Tracking: {$item->tracking_token}\nLacak status cucian: {$trackingUrl}\nTanggal masuk: " . \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') . "\nLayanan:\n{$barisNota}\n\nEstimasi selesai: " . ($item->estimasi_selesai ? \Carbon\Carbon::parse($item->estimasi_selesai)->format('d M Y H.i') : 'Belum ditentukan') . "\nStatus: {$statusText}\nTotal: Rp " . number_format((float) $item->total_harga, 0, ',', '.') . "\n\nTerima kasih telah menggunakan G'Laundry.";
+                                    $notaWhatsapp = \App\Support\WhatsAppNota::forTransaction($item);
                                 @endphp
                                 <tr>
                                     <td>{{ $transaksi->firstItem() + $index }}</td>
@@ -91,14 +84,14 @@
                                     <td>{{ $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
                                     <td class="transaksi-service" title="{{ $layananText }}">{{ $layananText ?: '—' }}</td>
                                     <td>{{ number_format((float) $jumlah, 2, ',', '.') }} {{ $isSatuan ? 'pcs' : 'kg' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}<small>{{ $item->created_at?->format('H.i') }}</small></td>
-                                    <td>{{ $item->estimasi_selesai ? \Carbon\Carbon::parse($item->estimasi_selesai)->format('d M Y') : '—' }}@if ($item->estimasi_selesai)<small>{{ \Carbon\Carbon::parse($item->estimasi_selesai)->format('H.i') }}</small>@endif</td>
+                                    <td>{{ \App\Support\LaundryDateFormatter::format($item->tanggal_masuk) }}<small>{{ $item->created_at?->format('H.i') }}</small></td>
+                                    <td>{{ \App\Support\LaundryDateFormatter::format($item->estimasi_selesai) }}</td>
                                     <td class="transaksi-price">Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td>
                                     <td><span class="cucian-status" style="--status-color: {{ $statusColor }}">{{ $statusText }}</span></td>
                                     <td>
                                         <div class="transaksi-row-actions">
                                             <a href="{{ route('cucian.show', $item->no_nota) }}" class="row-action view" aria-label="Lihat nota {{ $item->no_nota }}" title="Lihat nota"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a>
-                                            @if ($telepon !== '')<a href="https://wa.me/{{ $telepon }}?text={{ rawurlencode($pesanNota) }}" target="_blank" rel="noopener" class="row-action whatsapp" aria-label="Kirim nota {{ $item->no_nota }} lewat WhatsApp" title="Kirim nota via WhatsApp"><x-icons.whatsapp /></a>@else<span class="row-action whatsapp disabled" title="Nomor telepon belum tersedia"><x-icons.whatsapp /></span>@endif
+                                            @if ($notaWhatsapp)<a href="{{ $notaWhatsapp['url'] }}" target="_blank" rel="noopener noreferrer" class="row-action whatsapp" aria-label="Kirim ringkasan transaksi {{ $item->no_nota }} lewat WhatsApp" title="Kirim ringkasan transaksi via WhatsApp"><x-icons.whatsapp /></a>@else<span class="row-action whatsapp disabled" title="Nomor telepon belum tersedia"><x-icons.whatsapp /></span>@endif
                                         </div>
                                     </td>
                                 </tr>

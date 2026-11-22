@@ -18,7 +18,7 @@
                                 $colors = ['antrean' => '#65b6f7', 'diproses' => '#f49535', 'dicuci' => '#286ee8', 'dikeringkan' => '#28aeca', 'disetrika' => '#ff885c', 'selesai' => '#7655ed', 'diambil' => '#19a879'];
                             @endphp
                             <tr>
-                                <td>{{ \Carbon\Carbon::parse($item->waktu_status)->format('d M Y, H.i') }}</td>
+                                <td>{{ \App\Support\LaundryDateFormatter::format($item->waktu_status, true) }}</td>
                                 <td class="update-history-nota">{{ $item->no_nota }}</td>
                                 <td>{{ $item->transaksi?->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
                                 <td><span class="update-status-badge" style="--status-color: {{ $colors[$key] ?? '#9aa4b4' }}"><i></i>{{ $labels[$key] ?? ucfirst($key) }}</span></td>

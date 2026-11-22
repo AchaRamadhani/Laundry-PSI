@@ -7,6 +7,7 @@
     <meta name="description" content="Lacak status cucian G'Laundry menggunakan token tracking.">
     <title>Tracking Cucian | G'Laundry</title>
     <link rel="icon" href="{{ asset('images/logo-g-laundry.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ asset('css/typography.css') }}?v={{ filemtime(public_path('css/typography.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/tracking.css') }}?v={{ filemtime(public_path('css/tracking.css')) }}">
 </head>
@@ -56,11 +57,11 @@
                             @endphp
                             <div class="tracking-result-layout">
                                 <dl class="tracking-receipt-details">
-                                    <div><dt>Token Tracking</dt><dd>{{ $transaksi->tracking_token }}</dd></div>
+                                    <div><dt>Token Tracking</dt><dd class="tracking-token-value">{{ $tokenTracking }}</dd></div>
                                     <div><dt>Nama Pelanggan</dt><dd>{{ $transaksi->pelanggan?->nama_pelanggan ?? '—' }}</dd></div>
                                     <div><dt>Layanan</dt><dd>{{ $namaLayanan !== '' ? $namaLayanan : '—' }}</dd></div>
-                                    <div><dt>Tanggal Masuk</dt><dd>{{ \Carbon\Carbon::parse($transaksi->tanggal_masuk)->locale('id')->translatedFormat('d M Y') }}</dd></div>
-                                    <div><dt>Estimasi Selesai</dt><dd>{{ $transaksi->estimasi_selesai ? \Carbon\Carbon::parse($transaksi->estimasi_selesai)->locale('id')->translatedFormat('d M Y, H.i') : 'Belum ditentukan' }}</dd></div>
+                                    <div><dt>Tanggal Masuk</dt><dd>{{ \App\Support\LaundryDateFormatter::format($transaksi->tanggal_masuk) }}</dd></div>
+                                    <div><dt>Estimasi Selesai</dt><dd>{{ \App\Support\LaundryDateFormatter::format($transaksi->estimasi_selesai, true) }}</dd></div>
                                     <div><dt>Status saat ini</dt><dd class="tracking-current-status">{{ $statusLabel }}</dd></div>
                                 </dl>
 
@@ -68,11 +69,14 @@
                                     @foreach ($stages as $key => $label)
                                         @php
                                             $stageIndex = $loop->index;
-                                            $stageDone = $currentIndex >= $stageIndex;
+                                            $stageRequired = in_array($key, $applicableStages, true);
+                                            $stageSkipped = ! $stageRequired;
+                                            $stageDone = $stageRequired && $currentIndex >= $stageIndex;
                                         @endphp
-                                        <div class="tracking-progress-step {{ $stageDone ? 'is-done' : '' }} {{ $currentIndex === $stageIndex ? 'is-current' : '' }}">
+                                        <div class="tracking-progress-step {{ $stageDone ? 'is-done' : '' }} {{ $currentIndex === $stageIndex ? 'is-current' : '' }} {{ $stageSkipped ? 'is-skipped' : '' }}">
                                             <span class="tracking-stage-icon">@include('tracking.partials.status-icon', ['key' => $key])</span>
                                             <small>{{ $label }}</small>
+                                            @if ($stageSkipped)<span class="tracking-stage-note">Layanan ini tidak memerlukan tahapan ini</span>@endif
                                         </div>
                                     @endforeach
                                 </div>
@@ -99,7 +103,7 @@
                             <label class="sr-only" for="tracking-token">Token tracking</label>
                             <div class="input-wrap">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h6l5 5v13H8z"/><path d="M14 3v5h5M11 13h5M11 17h5"/></svg>
-                                <input id="tracking-token" name="token_tracking" type="text" value="{{ $tokenTracking }}" placeholder="Masukkan token tracking" autocomplete="off" maxlength="12" required>
+                                <input id="tracking-token" name="token_tracking" type="text" value="{{ $tokenTracking }}" placeholder="Masukkan token tracking" autocomplete="off" minlength="20" maxlength="20" required>
                             </div>
                             @error('token_tracking')<p class="form-error">{{ $message }}</p>@enderror
                             <button class="check-button" type="submit">
@@ -117,7 +121,7 @@
                         <div class="tracking-history-heading">
                             <h2 id="tracking-history-title">Riwayat Status</h2>
                             @if ($transaksi)
-                                <span>{{ $transaksi->tracking_token }}</span>
+                                <span>{{ $tokenTracking }}</span>
                             @endif
                         </div>
                         @if ($tokenTracking !== '' && ! $transaksi)
@@ -129,12 +133,18 @@
                             @foreach ($stages as $key => $label)
                                 @php
                                     $stageIndex = $loop->index;
-                                    $stageDone = $transaksi && $currentIndex >= $stageIndex;
+                                    $stageRequired = $transaksi && in_array($key, $applicableStages, true);
+                                    $stageSkipped = $transaksi && ! $stageRequired;
+                                    $stageDone = $stageRequired && $currentIndex >= $stageIndex;
                                 @endphp
-                                <li class="tracking-history-item {{ $stageDone ? 'is-done' : '' }} {{ $currentIndex === $stageIndex && $transaksi ? 'is-current' : '' }}">
+                                <li class="tracking-history-item {{ $stageDone ? 'is-done' : '' }} {{ $currentIndex === $stageIndex && $transaksi ? 'is-current' : '' }} {{ $stageSkipped ? 'is-skipped' : '' }}">
                                     <span class="tracking-history-icon">@include('tracking.partials.status-icon', ['key' => $key])</span>
                                     <span class="tracking-history-label">{{ $label }}</span>
-                                    <time>{{ $historyByStage[$key] ?? '—' }}</time>
+                                    @if ($stageSkipped)
+                                        <span class="tracking-stage-skipped">Layanan ini tidak memerlukan tahapan ini</span>
+                                    @else
+                                        <time>{{ $historyByStage[$key] ?? '—' }}</time>
+                                    @endif
                                 </li>
                             @endforeach
                         </ol>

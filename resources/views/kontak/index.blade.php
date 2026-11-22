@@ -7,6 +7,7 @@
     <meta name="description" content="Hubungi admin G'Laundry untuk pertanyaan cucian dan layanan laundry.">
     <title>Kontak | G'Laundry</title>
     <link rel="icon" href="{{ asset('images/logo-g-laundry.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ asset('css/typography.css') }}?v={{ filemtime(public_path('css/typography.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}?v={{ filemtime(public_path('css/landing.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/contact.css') }}?v={{ filemtime(public_path('css/contact.css')) }}">
 </head>

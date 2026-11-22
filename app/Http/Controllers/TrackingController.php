@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\LaundrySetting;
-use App\Models\Transaksi;
+use App\Support\LaundryDateFormatter;
+use App\Support\LaundryProgress;
 use App\Support\OperationalHours;
+use App\Support\TrackingToken;
 use App\Support\WhatsAppContact;
-use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -32,40 +33,37 @@ class TrackingController extends Controller
         'picked up' => 'diambil',
     ];
 
-    public function index(Request $request): View
+    public function index(Request $request, ?string $token = null): View
     {
         $validated = $request->validate([
-            'token_tracking' => ['nullable', 'string', 'max:12'],
+            'token_tracking' => ['nullable', 'string', 'size:20'],
         ]);
 
-        $tokenTracking = strtoupper(trim($validated['token_tracking'] ?? ''));
+        $tokenTracking = strtoupper(trim($token ?? ($validated['token_tracking'] ?? '')));
         $transaksi = null;
 
         if ($tokenTracking !== '') {
-            $transaksi = Transaksi::query()
-                ->with([
-                    'pelanggan:id,nama_pelanggan,no_telp',
-                    'detailTransaksi.paketLaundry:id,nama_paket',
-                    'statusLaundry' => fn ($query) => $query->orderBy('waktu_status'),
-                ])
-                ->where('tracking_token', $tokenTracking)
-                ->first();
+            $transaksi = TrackingToken::resolve($tokenTracking);
+            $transaksi?->load([
+                'pelanggan:id,nama_pelanggan,no_telp',
+                'detailTransaksi.paketLaundry:id,nama_paket',
+                'statusLaundry' => fn ($query) => $query->orderBy('waktu_status'),
+            ]);
         }
 
         $currentKey = $transaksi ? $this->normalizeStatus($transaksi->status_cucian) : null;
         $currentIndex = $currentKey ? array_search($currentKey, array_keys(self::STAGES), true) : false;
         $currentIndex = $currentIndex === false ? -1 : $currentIndex;
         $historyByStage = [];
+        $applicableStages = [];
 
         if ($transaksi !== null) {
+            $applicableStages = LaundryProgress::requiredStages($transaksi);
             foreach ($transaksi->statusLaundry as $entry) {
                 $key = $this->normalizeStatus($entry->status);
 
                 if (isset(self::STAGES[$key])) {
-                    $tanggal = Carbon::parse($entry->waktu_status);
-                    $tanggal->locale('id');
-
-                    $historyByStage[$key] = $tanggal->translatedFormat('d M Y, H.i');
+                    $historyByStage[$key] = LaundryDateFormatter::format($entry->waktu_status, true);
                 }
             }
         }
@@ -81,6 +79,7 @@ class TrackingController extends Controller
             'currentKey' => $currentKey,
             'currentIndex' => $currentIndex,
             'historyByStage' => $historyByStage,
+            'applicableStages' => $applicableStages,
             'address' => $settings?->address ?: 'Jl. Poros Hartaco Indah, Kel. Sudiang Raya, Kec. Biringkanaya, Kota Makassar, Sulawesi Selatan 90242',
         ], $operationalData, $whatsappData));
     }

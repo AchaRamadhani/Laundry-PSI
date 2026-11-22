@@ -15,7 +15,7 @@ body.admin-login-body {
     padding: 0;
     color: #252b44;
     background: #e9e4e4;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--g-laundry-font-family, Inter, "Segoe UI", system-ui, sans-serif);
 }
 
 .admin-login-page {

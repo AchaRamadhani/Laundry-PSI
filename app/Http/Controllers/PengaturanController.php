@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LaundrySetting;
+use App\Support\LaundryDateFormatter;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class PengaturanController extends Controller
             'closing_time' => '21:00',
             'notify_browser' => true,
             'notify_message' => true,
-            'date_format' => 'd-m-Y',
+            'date_format' => 'd/m/Y',
             'confirm_logout' => true,
         ]);
 
@@ -46,7 +47,7 @@ class PengaturanController extends Controller
             'completion_message' => ['nullable', 'string', 'max:3000'],
             'notify_browser' => ['required', 'boolean'],
             'notify_message' => ['required', 'boolean'],
-            'date_format' => ['required', Rule::in(['d-m-Y', 'Y-m-d', 'd/m/Y'])],
+            'date_format' => ['required', Rule::in(array_keys(LaundryDateFormatter::availableFormats()))],
             'confirm_logout' => ['required', 'boolean'],
             'current_password' => ['nullable', 'required_with:new_password', 'current_password'],
             'new_password' => ['nullable', 'string', Password::default(), 'confirmed'],
@@ -76,6 +77,7 @@ class PengaturanController extends Controller
                 ])->save();
             }
         });
+        LaundryDateFormatter::forgetCachedPattern();
 
         return redirect()
             ->route('settings.index')

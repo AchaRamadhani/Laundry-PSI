@@ -5,6 +5,12 @@
             'antrian' => 'antrean', 'proses' => 'diproses', 'pengeringan' => 'dikeringkan',
             default => strtolower($terpilih->status_cucian),
         } : null;
+        $completionWhatsapp = $terpilih && $statusKeyTerpilih === 'selesai'
+            ? \App\Support\WhatsAppNota::forCompletion($terpilih)
+            : null;
+        if ($terpilih?->completion_whatsapp_sent_at) {
+            $completionWhatsapp = null;
+        }
     @endphp
 
     <div class="update-status-page">
@@ -13,7 +19,7 @@
                 <h1>Update Status</h1>
                 <p class="update-status-lead">Perbarui tahapan proses cucian dan simpan riwayat perubahan status.</p>
                 <p class="update-status-caption">Perubahan status dilakukan di halaman ini agar riwayat proses cucian tercatat dengan jelas.</p>
-                <div class="update-status-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span>Nota digital dibuat otomatis saat data cucian disimpan. Kirim ulang nota akan membuka WhatsApp dengan pesan nota yang sudah terisi otomatis.</span></div>
+                <div class="update-status-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span>Pesan nota dan cucian selesai memuat informasi pembayaran. Jika cucian belum lunas diubah menjadi Diambil, pilih metode pelunasan pada popup sebelum menyimpan.</span></div>
             </div>
         </section>
 
@@ -47,7 +53,10 @@
             <select id="status-filter-service" name="layanan"><option value="">Semua Layanan</option>@foreach (\App\Support\LaundryOptions::SERVICES as $serviceKey => $service)<option value="{{ $serviceKey }}" @selected((string) $paketId === $serviceKey)>{{ $service['nama'] }}</option>@endforeach</select>
             <label class="update-status-month"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><select name="bulan" aria-label="Pilih bulan">@foreach ($namaBulan as $nomor => $nama)<option value="{{ $nomor }}" @selected((int) $bulan === (int) $nomor)>{{ $nama }}</option>@endforeach</select></label>
             <input type="hidden" name="tahun" value="{{ $tahun }}">
-            <button type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.5 7.5V19l-3 1v-7.5z"/></svg>Filter</button>
+            <div class="update-status-filter-actions">
+                <button type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16l-6.5 7.5V19l-3 1v-7.5z"/></svg>Filter</button>
+                <a class="update-status-reset-button" href="{{ route('update-status.index') }}" aria-label="Reset semua filter"><span class="update-status-reset-icon" aria-hidden="true">↻</span><span>Reset Filter</span></a>
+            </div>
             @if ($terpilih)<input type="hidden" name="nota" value="{{ $terpilih->no_nota }}">@endif
         </form>
 
@@ -64,18 +73,22 @@
                                     $currentLabel = $statusFilterOptions[$currentKey] ?? ucfirst($currentKey);
                                     $currentColor = collect($statusCards)->firstWhere('key', $currentKey)?->warna ?? '#9aa4b4';
                                     $services = $item->detailTransaksi->map(fn ($detail) => $detail->paketLaundry?->nama_paket)->filter()->unique()->implode(', ');
+                                    $allowedStatusKeys = \App\Support\LaundryProgress::availableTargets($item);
                                     $formId = 'status-form-' . $loop->index;
                                     $formAction = route('update-status.update', array_merge(['transaksi' => $item->no_nota], request()->query(), ['nota' => $item->no_nota]));
                                 @endphp
                                 <tr class="{{ $terpilih?->no_nota === $item->no_nota ? 'selected' : '' }}">
                                     <td class="update-nota-cell">
-                                        <form id="{{ $formId }}" action="{{ $formAction }}" method="POST" hidden>@csrf @method('PUT')</form>
+                                        <form id="{{ $formId }}" class="update-status-payment-form" action="{{ $formAction }}" method="POST" data-payment-status="{{ $item->status_pembayaran }}" hidden>
+                                            @csrf @method('PUT')
+                                            <input type="hidden" name="metode_pembayaran_pelunasan" value="">
+                                        </form>
                                         <a href="{{ route('update-status.index', array_merge(request()->query(), ['nota' => $item->no_nota])) }}">{{ $item->no_nota }}</a>
                                     </td>
-                                    <td>{{ $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
+                                    <td><a class="update-customer-select-link" href="{{ route('update-status.index', array_merge(request()->query(), ['nota' => $item->no_nota])) }}" aria-label="Lihat progres {{ $item->pelanggan?->nama_pelanggan ?? 'pelanggan' }}">{{ $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</a></td>
                                     <td class="update-service-cell" title="{{ $services }}">{{ $services ?: '—' }}</td>
                                     <td><span class="update-status-badge" style="--status-color: {{ $currentColor }}"><i></i>{{ $currentLabel }}</span></td>
-                                    <td><label class="sr-only" for="new-status-{{ $loop->index }}">Pilih status baru untuk {{ $item->no_nota }}</label><select class="new-status-select" id="new-status-{{ $loop->index }}" name="status_baru" form="{{ $formId }}" required>@foreach ($tahapan as $step)<option value="{{ $step->key }}" @selected($currentKey === $step->key)>{{ $step->label }}</option>@endforeach</select></td>
+                                    <td><label class="sr-only" for="new-status-{{ $loop->index }}">Pilih status baru untuk {{ $item->no_nota }}</label><select class="new-status-select" id="new-status-{{ $loop->index }}" name="status_baru" form="{{ $formId }}" required>@foreach ($tahapan as $step)@if (in_array($step->key, $allowedStatusKeys, true))<option value="{{ $step->key }}" @selected($currentKey === $step->key)>{{ $step->label }}</option>@endif @endforeach</select></td>
                                     <td><input class="status-note-input" type="text" name="catatan_status" form="{{ $formId }}" maxlength="500" placeholder="Masukkan catatan..."></td>
                                     <td><button class="save-status-button" type="submit" form="{{ $formId }}">Simpan</button></td>
                                 </tr>
@@ -101,14 +114,34 @@
                         </div>
                         <div class="selected-order-meta">
                             <div><small>Layanan</small><strong>{{ $terpilih->detailTransaksi->map(fn ($detail) => $detail->paketLaundry?->nama_paket)->filter()->unique()->implode(', ') ?: '—' }}</strong></div>
-                            <div><small>Tanggal Masuk</small><strong>{{ \Carbon\Carbon::parse($terpilih->tanggal_masuk)->format('d M Y') }}{{ $terpilih->created_at ? ', ' . $terpilih->created_at->format('H.i') : '' }}</strong></div>
-                            <div><small>Estimasi Selesai</small><strong>{{ $terpilih->estimasi_selesai ? \Carbon\Carbon::parse($terpilih->estimasi_selesai)->format('d M Y, H.i') : 'Belum ditentukan' }}</strong></div>
+                            <div><small>Tanggal Masuk</small><strong>{{ \App\Support\LaundryDateFormatter::format($terpilih->tanggal_masuk) }}{{ $terpilih->created_at ? ', ' . $terpilih->created_at->format('H.i') : '' }}</strong></div>
+                            <div><small>Estimasi Selesai</small><strong>{{ $terpilih->estimasi_selesai ? \App\Support\LaundryDateFormatter::format($terpilih->estimasi_selesai, true) : 'Belum ditentukan' }}</strong></div>
                         </div>
+                        <div class="selected-payment-summary">
+                            <div><small>Status Pembayaran</small><strong>{{ $terpilih->status_pembayaran_label }}</strong></div>
+                            <div><small>Metode Pembayaran</small><strong>{{ $terpilih->metode_pembayaran_label }}</strong></div>
+                        </div>
+                        @if ($completionWhatsapp)
+                            <div class="status-completion-actions">
+                                <a class="status-completion-whatsapp" href="{{ $completionWhatsapp['url'] }}" target="_blank" rel="noopener noreferrer"><x-icons.whatsapp />Buka WhatsApp</a>
+                                <form action="{{ route('update-status.whatsapp-sent', $terpilih->no_nota) }}" method="POST" onsubmit="return confirm('Tandai pesan WhatsApp sebagai sudah terkirim?')">
+                                    @csrf
+                                    <button class="status-completion-sent" type="submit">Tandai sudah dikirim</button>
+                                </form>
+                            </div>
+                            <p class="status-whatsapp-hint">Setelah pesan terkirim di WhatsApp, kembali ke sini lalu tandai sudah dikirim agar tombol tidak muncul lagi.</p>
+                        @elseif ($terpilih->completion_whatsapp_sent_at)
+                            <p class="status-completion-sent-note" role="status">Pesan WhatsApp sudah dikirim pada {{ $terpilih->completion_whatsapp_sent_at->format('d/m/Y, H.i') }}.</p>
+                        @endif
                         <div class="status-progress-track">
                             @foreach ($tahapan as $index => $step)
-                                <div class="progress-step {{ $index < $tahapAktif ? 'complete' : '' }} {{ $index === $tahapAktif ? 'current' : '' }}" style="--step-color: {{ $step->warna }}">
+                                @php
+                                    $tahapDiperlukan = in_array($step->key, $tahapanWajib, true);
+                                    $tahapDilewati = ! $tahapDiperlukan;
+                                @endphp
+                                <div class="progress-step {{ $index < $tahapAktif ? 'complete' : '' }} {{ $index === $tahapAktif ? 'current' : '' }} {{ $tahapDilewati ? 'skipped' : '' }}" style="--step-color: {{ $step->warna }}" @if ($tahapDilewati) title="Layanan ini tidak memerlukan tahapan ini" @endif>
                                     <span class="progress-step-icon">
-                                        @if ($index < $tahapAktif)<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
+                                        @if (! $tahapDilewati && $index < $tahapAktif)<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>
                                         @elseif ($step->key === 'antrean')<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2zM16 14a5 5 0 0 1 5 5"/></svg>
                                         @elseif ($step->key === 'diproses')<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m19 13 .1-2 2-1.4-2-3.5-2.4 1a8 8 0 0 0-1.7-1L14.5 4h-5L9 7a8 8 0 0 0-1.7 1l-2.4-1-2 3.5L5 12v2l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 1.7 1l.5 3h5l.5-3a8 8 0 0 0 1.7-1l2.4 1 2-3.5z"/></svg>
                                         @elseif ($step->key === 'dicuci')<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="14" r="4"/><path d="M4 8h16"/></svg>
@@ -118,7 +151,7 @@
                                         @else<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10h14v11H5zM9 10V7a3 3 0 0 1 6 0v3"/></svg>@endif
                                     </span>
                                     <strong>{{ $step->label }}</strong>
-                                    <small>{{ $tahapTanggal[$step->key] ?? '—' }}</small>
+                                    <small>{{ $tahapDilewati ? 'Layanan ini tidak memerlukan tahapan ini' : ($tahapTanggal[$step->key] ?? '—') }}</small>
                                 </div>
                             @endforeach
                         </div>
@@ -139,7 +172,7 @@
                             <div class="latest-status-item">
                                 <i style="--step-color: {{ $latestColor }}"></i>
                                 <div><strong>{{ $latestLabel }}</strong><small>{{ $item->catatan_status ?: 'Perubahan status dicatat.' }}</small></div>
-                                <span>{{ $item->admin_name ?: 'Admin' }}<small>{{ \Carbon\Carbon::parse($item->waktu_status)->format('d M Y, H.i') }}</small></span>
+                                <span>{{ $item->admin_name ?: 'Admin' }}<small>{{ \App\Support\LaundryDateFormatter::format($item->waktu_status, true) }}</small></span>
                             </div>
                         @empty
                             <p class="update-status-empty-note">Belum ada riwayat perubahan status.</p>
@@ -150,4 +183,22 @@
             </aside>
         </section>
     </div>
+    <div class="payment-settlement-backdrop" id="paymentSettlementModal" hidden>
+        <section class="payment-settlement-dialog" role="dialog" aria-modal="true" aria-labelledby="paymentSettlementTitle" aria-describedby="paymentSettlementDescription">
+            <span class="payment-settlement-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
+            <h2 id="paymentSettlementTitle">Konfirmasi Pelunasan</h2>
+            <p id="paymentSettlementDescription">Cucian ini belum lunas. Pilih metode pembayaran yang diterima sebelum menandai cucian sebagai Diambil.</p>
+            <fieldset class="payment-settlement-options">
+                <legend>Metode pembayaran</legend>
+                <label><input type="radio" name="payment_settlement_choice" value="tunai"><span><strong>Tunai / Cash</strong><small>Pembayaran tunai saat pengambilan</small></span></label>
+                <label><input type="radio" name="payment_settlement_choice" value="qris"><span><strong>QRIS</strong><small>Pembayaran melalui QRIS saat pengambilan</small></span></label>
+            </fieldset>
+            <p class="payment-settlement-error" id="paymentSettlementError" role="alert" hidden>Pilih metode pembayaran untuk melanjutkan.</p>
+            <div class="payment-settlement-actions">
+                <button type="button" data-payment-cancel>Batal</button>
+                <button type="button" data-payment-confirm>Konfirmasi &amp; Simpan</button>
+            </div>
+        </section>
+    </div>
+    <script src="{{ asset('js/update-status-payment.js') }}" defer></script>
 </x-layouts::app>

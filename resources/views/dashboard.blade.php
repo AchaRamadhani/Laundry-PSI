@@ -132,7 +132,7 @@
                                 <tr>
                                     <td class="receipt-cell">{{ $transaksi->no_nota }}</td>
                                     <td>{{ $transaksi->nama_pelanggan ?? 'Pelanggan tidak ditemukan' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($transaksi->tanggal_masuk)->format('d M Y') }}</td>
+                                    <td>{{ \App\Support\LaundryDateFormatter::format($transaksi->tanggal_masuk) }}</td>
                                     <td class="service-cell" title="{{ $transaksi->nama_layanan }}">{{ $transaksi->nama_layanan }}</td>
                                     <td><span class="order-status" style="--status-color: {{ $transaksi->status_warna }}">{{ $transaksi->status_label }}</span></td>
                                     <td class="total-cell">Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>

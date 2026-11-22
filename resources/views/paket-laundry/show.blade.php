@@ -16,7 +16,7 @@
             <article class="cucian-panel paket-detail-card">
                 <div class="paket-detail-title"><div><small>KATEGORI {{ strtoupper($paket->kategori) }}</small><h2>{{ $paket->nama_paket }}</h2></div><span class="paket-state {{ $aktif ? 'active' : 'inactive' }}">{{ $aktif ? 'Aktif' : 'Nonaktif' }}</span></div>
                 <p class="paket-detail-description">{{ $paket->deskripsi ?: 'Tidak ada deskripsi tambahan untuk paket ini.' }}</p>
-                <div class="paket-detail-stats"><div><small>Harga Mulai</small><strong>Rp {{ number_format((float) $paket->harga_mulai, 0, ',', '.') }} / {{ $unitHarga }}</strong></div><div><small>Durasi</small><strong>{{ number_format($paket->durasi, 0, ',', '.') }} hari</strong></div><div><small>Jumlah Penggunaan</small><strong>{{ number_format($jumlahPenggunaan, 0, ',', '.') }} transaksi</strong></div><div><small>Dibuat</small><strong>{{ $paket->created_at?->format('d M Y') ?? '—' }}</strong></div></div>
+                <div class="paket-detail-stats"><div><small>Harga Mulai</small><strong>Rp {{ number_format((float) $paket->harga_mulai, 0, ',', '.') }} / {{ $unitHarga }}</strong></div><div><small>Durasi</small><strong>{{ number_format($paket->durasi, 0, ',', '.') }} hari</strong></div><div><small>Jumlah Penggunaan</small><strong>{{ number_format($jumlahPenggunaan, 0, ',', '.') }} transaksi</strong></div><div><small>Dibuat</small><strong>{{ \App\Support\LaundryDateFormatter::format($paket->created_at) }}</strong></div></div>
             </article>
 
             <article class="cucian-panel paket-usage-card">
@@ -25,7 +25,7 @@
                     <table class="paket-usage-table"><thead><tr><th>No. Nota</th><th>Pelanggan</th><th>Berat/Qty</th><th>Subtotal</th><th>Tanggal</th></tr></thead>
                         <tbody>
                             @forelse ($paket->detailTransaksi as $detail)
-                                <tr><td>{{ $detail->no_nota }}</td><td>{{ $detail->transaksi?->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td><td>{{ number_format((float) $detail->berat_qty, 2, ',', '.') }} {{ $unitJumlah }}</td><td>Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}</td><td>{{ $detail->created_at?->format('d M Y') ?? '—' }}</td></tr>
+                                <tr><td>{{ $detail->no_nota }}</td><td>{{ $detail->transaksi?->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td><td>{{ number_format((float) $detail->berat_qty, 2, ',', '.') }} {{ $unitJumlah }}</td><td>Rp {{ number_format((float) $detail->subtotal, 0, ',', '.') }}</td><td>{{ \App\Support\LaundryDateFormatter::format($detail->created_at) }}</td></tr>
                             @empty
                                 <tr><td colspan="5" class="cucian-empty">Paket ini belum digunakan dalam transaksi.</td></tr>
                             @endforelse

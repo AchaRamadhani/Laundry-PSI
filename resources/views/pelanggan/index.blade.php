@@ -84,7 +84,7 @@
                                     <td class="pelanggan-phone">{{ $item->no_telp }}</td>
                                     <td>{{ number_format($item->jumlah_transaksi, 0, ',', '.') }}</td>
                                     <td>{{ number_format($item->cucian_berjalan, 0, ',', '.') }}</td>
-                                    <td>{{ $item->transaksi_terakhir ? \Carbon\Carbon::parse($item->transaksi_terakhir)->format('d M Y') : '—' }}</td>
+                                    <td>{{ \App\Support\LaundryDateFormatter::format($item->transaksi_terakhir) }}</td>
                                     <td>
                                         <div class="pelanggan-row-actions">
                                             <a href="{{ route('pelanggan.show', $item) }}" class="row-action view" aria-label="Lihat {{ $item->nama_pelanggan }}" title="Lihat detail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a>

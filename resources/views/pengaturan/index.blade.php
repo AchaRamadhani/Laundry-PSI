@@ -25,7 +25,7 @@
                     <h2 id="settings-profile-title">Profil admin</h2>
                     <div class="settings-profile-identity">
                         <span class="settings-large-avatar" aria-hidden="true">
-                            <svg viewBox="0 0 96 96"><circle cx="48" cy="30" r="19"/><path d="M10 87c3-21 18-33 38-33s35 12 38 33c-10 9-23 13-38 13S20 96 10 87Z"/></svg>
+                            <img src="{{ asset('images/contact-admin-illustration.png') }}" alt="">
                         </span>
                         <strong>{{ $admin->name }}</strong>
                         <span>Administrator</span>
@@ -66,8 +66,8 @@
                         </div>
                         <label class="settings-field settings-field-wide">
                             <span>Pesan Otomatis WhatsApp saat Status “Selesai”</span>
-                            <textarea name="completion_message" maxlength="3000" rows="4" placeholder="Tulis pesan otomatis. Gunakan {nama_pelanggan} dan {no_nota} sebagai placeholder.">{{ old('completion_message', $settings->completion_message ?? '') }}</textarea>
-                            <small>Gunakan {nama_pelanggan} dan {no_nota} sebagai placeholder dinamis.</small>
+                            <textarea name="completion_message" maxlength="3000" rows="12" placeholder="Format pesan WhatsApp cucian selesai">{{ old('completion_message', \App\Support\WhatsAppNota::completionTemplateFor($settings->completion_message)) }}</textarea>
+                            <small>Pesan ini disiapkan saat status menjadi Selesai. Placeholder: {nama_pelanggan}, {no_nota}, {layanan}, {status_cucian}, {total_harga}, {status_pembayaran}, {metode_pembayaran}, {rincian_catatan}, {jam_buka}, {jam_mulai_istirahat}, {jam_selesai_istirahat}, {jam_tutup}, {url_web}, {catatan_pembayaran}, {token_tracking}, dan {url_tracking}. Catatan transaksi hanya ditampilkan jika diisi. Kosongkan untuk memakai format standar.</small>
                         </label>
                     </div>
                 </section>
@@ -90,11 +90,11 @@
                     </label>
                     <label class="settings-preference-row">
                         <span class="settings-preference-icon settings-calendar-icon" aria-hidden="true">▣</span>
-                        <span class="settings-preference-copy"><strong>Format Tanggal</strong><small>Pilih format tanggal yang digunakan</small></span>
+                        <span class="settings-preference-copy"><strong>Format Tanggal</strong><small>Indonesia/British, ISO 8601, atau Amerika</small></span>
                         <select class="settings-date-select" name="date_format">
-                            <option value="d-m-Y" @selected(old('date_format', $settings->date_format ?? 'd-m-Y') === 'd-m-Y')>DD MM YYYY</option>
-                            <option value="Y-m-d" @selected(old('date_format', $settings->date_format ?? 'd-m-Y') === 'Y-m-d')>YYYY MM DD</option>
-                            <option value="d/m/Y" @selected(old('date_format', $settings->date_format ?? 'd-m-Y') === 'd/m/Y')>DD/MM/YYYY</option>
+                            @foreach (\App\Support\LaundryDateFormatter::availableFormats() as $format => $label)
+                                <option value="{{ $format }}" @selected(old('date_format', $settings->date_format ?? 'd/m/Y') === $format)>{{ $label }}</option>
+                            @endforeach
                         </select>
                     </label>
                     <input type="hidden" name="confirm_logout" value="0">

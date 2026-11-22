@@ -8,7 +8,7 @@
         <div class="pelanggan-detail-grid">
             <article class="cucian-panel pelanggan-profile-card">
                 <div class="pelanggan-profile-top"><span class="pelanggan-profile-avatar"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="6"/><path d="M4 29v-3a12 12 0 0 1 24 0v3z"/></svg></span><div><small>ID Pelanggan</small><strong>PLG-GL-{{ str_pad((string) $pelanggan->id, 3, '0', STR_PAD_LEFT) }}</strong><h2>{{ $pelanggan->nama_pelanggan }}</h2></div></div>
-                <div class="pelanggan-profile-data"><div><small>Nomor Telepon</small><strong>{{ $pelanggan->no_telp }}</strong></div><div><small>Terdaftar Sejak</small><strong>{{ $pelanggan->created_at?->format('d M Y') ?? '—' }}</strong></div><div><small>Total Transaksi</small><strong>{{ number_format($jumlahTransaksi, 0, ',', '.') }}</strong></div></div>
+                <div class="pelanggan-profile-data"><div><small>Nomor Telepon</small><strong>{{ $pelanggan->no_telp }}</strong></div><div><small>Terdaftar Sejak</small><strong>{{ \App\Support\LaundryDateFormatter::format($pelanggan->created_at) }}</strong></div><div><small>Total Transaksi</small><strong>{{ number_format($jumlahTransaksi, 0, ',', '.') }}</strong></div></div>
             </article>
 
             <article class="cucian-panel pelanggan-history-card">
@@ -23,7 +23,7 @@
                                     $color = match ($statusKey) { 'antrean', 'antrian' => '#62b5f7', 'proses', 'diproses' => '#ff9f1c', 'dicuci' => '#3588ef', 'dikeringkan', 'pengeringan' => '#20b7bd', 'disetrika' => '#f5a11b', 'selesai' => '#7552e8', 'diambil' => '#55b85f', default => '#9aa4b4' };
                                     $services = $item->detailTransaksi->map(fn ($detail) => $detail->paketLaundry?->nama_paket)->filter()->unique()->implode(', ');
                                 @endphp
-                                <tr><td class="pelanggan-code">{{ $item->no_nota }}</td><td>{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}</td><td>{{ $services ?: '—' }}</td><td>Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td><td><span class="cucian-status" style="--status-color: {{ $color }}">{{ $label }}</span></td><td><a class="history-view-link" href="{{ route('cucian.show', $item->no_nota) }}">Lihat nota</a></td></tr>
+                                <tr><td class="pelanggan-code">{{ $item->no_nota }}</td><td>{{ \App\Support\LaundryDateFormatter::format($item->tanggal_masuk) }}</td><td>{{ $services ?: '—' }}</td><td>Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td><td><span class="cucian-status" style="--status-color: {{ $color }}">{{ $label }}</span></td><td><a class="history-view-link" href="{{ route('cucian.show', $item->no_nota) }}">Lihat nota</a></td></tr>
                             @empty
                                 <tr><td colspan="6" class="cucian-empty">Pelanggan ini belum memiliki transaksi.</td></tr>
                             @endforelse

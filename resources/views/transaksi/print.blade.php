@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rekap Transaksi {{ $namaBulan[$bulan] }} {{ $tahun }}</title>
+    <link rel="stylesheet" href="{{ asset('css/typography.css') }}?v={{ filemtime(public_path('css/typography.css')) }}">
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 28px; color: #202638; font-family: Arial, Helvetica, sans-serif; font-size: 12px; }
+        body { margin: 0; padding: 28px; color: #202638; font-family: var(--g-laundry-font-family); font-size: 12px; }
         .print-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin: 0 auto 18px; max-width: 1100px; }
         .print-toolbar button, .print-toolbar a { padding: 9px 14px; color: #fff; border: 0; border-radius: 5px; background: #0846e9; cursor: pointer; font: inherit; text-decoration: none; }
         .print-toolbar a { color: #35405a; border: 1px solid #d9dde6; background: #fff; }
@@ -31,7 +32,7 @@
     <div class="print-toolbar"><a href="{{ route('transaksi.index') }}">Kembali</a><button type="button" onclick="window.print()">Cetak</button></div>
     <main class="print-sheet">
         <header class="print-brand"><img src="{{ asset('images/logo-g-laundry.png') }}" alt="Logo G'Laundry"><div><h1>Rekap Transaksi</h1><p>Periode {{ $namaBulan[$bulan] }} {{ $tahun }} · G'Laundry</p></div></header>
-        <div class="print-meta"><div><strong>Dicetak:</strong> {{ now()->format('d M Y, H.i') }}</div><div class="print-total">Jumlah transaksi<strong>{{ number_format($transaksi->count(), 0, ',', '.') }}</strong></div><div class="print-total">Total pendapatan<strong>Rp {{ number_format((float) $totalPendapatan, 0, ',', '.') }}</strong></div></div>
+        <div class="print-meta"><div><strong>Dicetak:</strong> {{ \App\Support\LaundryDateFormatter::format(now(), true) }}</div><div class="print-total">Jumlah transaksi<strong>{{ number_format($transaksi->count(), 0, ',', '.') }}</strong></div><div class="print-total">Total pendapatan<strong>Rp {{ number_format((float) $totalPendapatan, 0, ',', '.') }}</strong></div></div>
         <table>
             <thead><tr><th>No.</th><th>No. Nota</th><th>Pelanggan</th><th>Layanan</th><th>Berat/Qty</th><th>Tanggal Masuk</th><th>Estimasi Selesai</th><th>Status</th><th>Total Harga</th></tr></thead>
             <tbody>
@@ -42,7 +43,7 @@
                         $layanan = $item->detailTransaksi->map(fn ($detail) => $detail->paketLaundry?->nama_paket)->filter()->unique()->implode(', ');
                         $jumlah = $item->detailTransaksi->sum('berat_qty');
                     @endphp
-                    <tr><td>{{ $index + 1 }}</td><td>{{ $item->no_nota }}</td><td>{{ $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}<br>{{ $item->pelanggan?->no_telp }}</td><td>{{ $layanan ?: '—' }}</td><td>{{ number_format((float) $jumlah, 2, ',', '.') }}</td><td>{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}</td><td>{{ $item->estimasi_selesai ? \Carbon\Carbon::parse($item->estimasi_selesai)->format('d M Y H.i') : '—' }}</td><td>{{ $statusText }}</td><td>Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td></tr>
+                    <tr><td>{{ $index + 1 }}</td><td>{{ $item->no_nota }}</td><td>{{ $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}<br>{{ $item->pelanggan?->no_telp }}</td><td>{{ $layanan ?: '—' }}</td><td>{{ number_format((float) $jumlah, 2, ',', '.') }}</td><td>{{ \App\Support\LaundryDateFormatter::format($item->tanggal_masuk) }}</td><td>{{ \App\Support\LaundryDateFormatter::format($item->estimasi_selesai, true) }}</td><td>{{ $statusText }}</td><td>Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td></tr>
                 @empty
                     <tr><td colspan="9" style="text-align:center">Tidak ada transaksi pada periode ini.</td></tr>
                 @endforelse

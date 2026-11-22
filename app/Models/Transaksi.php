@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
+use App\Support\TrackingToken;
 
 class Transaksi extends Model
 {
@@ -25,25 +25,36 @@ class Transaksi extends Model
         'estimasi_selesai',
         'total_harga',
         'status_cucian',
+        'status_pembayaran',
+        'metode_pembayaran',
+        'completion_whatsapp_sent_at',
         'catatan',
     ];
 
-    protected static function booted(): void
+    protected function casts(): array
     {
-        static::creating(function (Transaksi $transaksi): void {
-            if (blank($transaksi->tracking_token)) {
-                $transaksi->tracking_token = self::generateTrackingToken();
-            }
-        });
+        return [
+            'completion_whatsapp_sent_at' => 'datetime',
+        ];
     }
 
-    private static function generateTrackingToken(): string
+    public function getStatusPembayaranLabelAttribute(): string
     {
-        do {
-            $token = Str::upper(Str::random(12));
-        } while (self::query()->where('tracking_token', $token)->exists());
+        return $this->status_pembayaran === 'lunas' ? 'Lunas (Sudah Dibayar)' : 'Belum Lunas (Bayar saat Pengambilan)';
+    }
 
-        return $token;
+    public function getMetodePembayaranLabelAttribute(): string
+    {
+        return match ($this->metode_pembayaran) {
+            'tunai' => 'Tunai / Cash',
+            'qris' => 'QRIS',
+            default => 'Bayar saat Pengambilan',
+        };
+    }
+
+    public function getTrackingTokenAttribute(): string
+    {
+        return TrackingToken::forTransaction($this);
     }
 
     /**

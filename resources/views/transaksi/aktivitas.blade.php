@@ -20,8 +20,8 @@
                             <tr>
                                 <td class="transaksi-nota">{{ $item->no_nota }}</td>
                                 <td>{{ $item->pelanggan?->nama_pelanggan ?? 'Pelanggan dihapus' }}</td>
-                                <td>{{ $item->created_at?->format('d M Y, H.i') ?? '—' }}</td>
-                                <td>{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}</td>
+                                <td>{{ \App\Support\LaundryDateFormatter::format($item->created_at, true) }}</td>
+                                <td>{{ \App\Support\LaundryDateFormatter::format($item->tanggal_masuk) }}</td>
                                 <td class="transaksi-price">Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td>
                                 <td><span class="cucian-status" style="--status-color: {{ $color }}">{{ $label }}</span></td>
                                 <td><a class="row-action view" href="{{ route('cucian.show', $item->no_nota) }}" aria-label="Lihat nota {{ $item->no_nota }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></a></td>

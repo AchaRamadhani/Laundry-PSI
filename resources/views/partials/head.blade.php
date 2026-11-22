@@ -7,6 +7,7 @@
 
 <link rel="icon" href="{{ asset('images/logo-g-laundry.png') }}" type="image/png">
 <link rel="apple-touch-icon" href="{{ asset('images/logo-g-laundry.png') }}">
+<link rel="stylesheet" href="{{ asset('css/typography.css') }}?v={{ filemtime(public_path('css/typography.css')) }}">
 
 @fonts
 

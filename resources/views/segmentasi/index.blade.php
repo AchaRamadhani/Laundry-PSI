@@ -51,7 +51,7 @@
                                 <td class="segment-phone">{{ $item->no_telp }}</td>
                                 <td>{{ $item->lama_menjadi_pelanggan }}</td>
                                 <td>{{ number_format($item->jumlah_transaksi, 0, ',', '.') }}</td>
-                                <td>{{ $item->transaksi_terakhir ? \Carbon\Carbon::parse($item->transaksi_terakhir)->format('d M Y') : '—' }}</td>
+                                <td>{{ \App\Support\LaundryDateFormatter::format($item->transaksi_terakhir) }}</td>
                                 <td><span class="segment-pill {{ $item->segment_key }}">{{ $item->segment_label }}</span></td>
                             </tr>
                         @empty

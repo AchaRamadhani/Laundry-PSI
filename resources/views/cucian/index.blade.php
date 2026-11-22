@@ -135,8 +135,7 @@
                                     };
                                     $jumlah = $item->detailTransaksi->sum('berat_qty');
                                     $layananText = $item->detailTransaksi->map(fn ($detail) => $detail->paketLaundry?->nama_paket)->filter()->unique()->implode(', ');
-                                    $telepon = preg_replace('/\D+/', '', $item->pelanggan?->no_telp ?? '');
-                                    $telepon = str_starts_with($telepon, '0') ? '62' . substr($telepon, 1) : $telepon;
+                                    $notaWhatsapp = \App\Support\WhatsAppNota::forTransaction($item);
                                 @endphp
                                 <tr>
                                     <td>{{ $cucian->firstItem() + $index }}</td>
@@ -145,8 +144,8 @@
                                     <td class="cucian-phone">{{ $item->pelanggan?->no_telp ?? '—' }}</td>
                                     <td class="cucian-service" title="{{ $layananText }}">{{ $layananText ?: '—' }}</td>
                                     <td>{{ number_format((float) $jumlah, 2, ',', '.') }} {{ $item->detailTransaksi->contains(fn ($detail) => strtolower($detail->paketLaundry?->kategori ?? '') === 'satuan') ? 'pcs' : 'kg' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_masuk)->format('d M Y') }}</td>
-                                    <td>{{ $item->estimasi_selesai ? \Carbon\Carbon::parse($item->estimasi_selesai)->format('d M Y') : '—' }}</td>
+                                    <td>{{ \App\Support\LaundryDateFormatter::format($item->tanggal_masuk) }}</td>
+                                    <td>{{ \App\Support\LaundryDateFormatter::format($item->estimasi_selesai) }}</td>
                                     <td><span class="cucian-status" style="--status-color: {{ $statusColor }}">{{ $statusText }}</span></td>
                                     <td class="cucian-price">Rp {{ number_format((float) $item->total_harga, 0, ',', '.') }}</td>
                                     <td>
@@ -157,8 +156,8 @@
                                                 @csrf @method('DELETE')
                                                 <button class="row-action delete" type="submit" aria-label="Hapus {{ $item->no_nota }}" title="Hapus data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7m4 4v5m4-5v5"/></svg></button>
                                             </form>
-                                            @if ($telepon !== '')
-                                                <a href="https://wa.me/{{ $telepon }}?text={{ rawurlencode('Halo ' . ($item->pelanggan?->nama_pelanggan ?? '') . ', kami menghubungi Anda terkait cucian dengan nota ' . $item->no_nota . '.') }}" target="_blank" rel="noopener" class="row-action whatsapp" aria-label="Hubungi {{ $item->pelanggan?->nama_pelanggan }} melalui WhatsApp" title="WhatsApp"><x-icons.whatsapp /></a>
+                                            @if ($notaWhatsapp)
+                                                <a href="{{ $notaWhatsapp['url'] }}" target="_blank" rel="noopener noreferrer" class="row-action whatsapp" aria-label="Kirim ringkasan transaksi {{ $item->no_nota }} kepada {{ $item->pelanggan?->nama_pelanggan }}" title="Kirim ringkasan transaksi via WhatsApp"><x-icons.whatsapp /></a>
                                             @endif
                                         </div>
                                     </td>

@@ -7,9 +7,11 @@ use App\Models\PaketLaundry;
 use App\Models\Pelanggan;
 use App\Models\StatusLaundry;
 use App\Models\Transaksi;
+use App\Support\LaundryDateFormatter;
 use App\Support\LaundryOptions;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -120,6 +122,7 @@ class CucianController extends Controller
 
         $query = (clone $periode)->with([
             'pelanggan',
+            'admin',
             'detailTransaksi.paketLaundry',
         ]);
 
@@ -180,14 +183,54 @@ class CucianController extends Controller
             ->whereRaw('LOWER(status) = ?', ['aktif'])
             ->orderBy('nama_paket')
             ->get();
+        $selectedCustomerId = old('jenis_pelanggan') === 'lama' ? old('pelanggan_id') : null;
+        $selectedPelanggan = is_numeric($selectedCustomerId)
+            ? Pelanggan::query()->withCount('transaksi')->find((int) $selectedCustomerId)
+            : null;
 
         return view('cucian.form', [
             'cucian' => null,
-            'pelanggan' => Pelanggan::query()->orderBy('nama_pelanggan')->get(),
+            'selectedPelanggan' => $selectedPelanggan,
             'paketLaundry' => $paketAktif,
             'layananOptions' => LaundryOptions::SERVICES,
             'paketPerLayanan' => $this->paketPerLayanan($paketAktif),
         ]);
+    }
+
+    public function searchCustomers(Request $request): JsonResponse
+    {
+        $search = trim((string) $request->query('q', ''));
+        if ($search === '') {
+            return response()->json(['results' => [], 'message' => 'Masukkan nama pelanggan atau empat digit terakhir nomor telepon.'], 422);
+        }
+
+        $isPhoneSearch = preg_match('/^[0-9\s()+-]+$/', $search) === 1;
+        $query = Pelanggan::query()->withCount('transaksi');
+
+        if ($isPhoneSearch) {
+            $digits = preg_replace('/\D+/', '', $search) ?? '';
+            if (strlen($digits) < 4) {
+                return response()->json(['results' => [], 'message' => 'Untuk pencarian nomor telepon, masukkan minimal empat digit terakhir.'], 422);
+            }
+
+            $query->where('no_telp', 'like', '%'.$digits);
+        } else {
+            $query->where('nama_pelanggan', 'like', '%'.$search.'%');
+        }
+
+        $results = $query
+            ->orderBy('nama_pelanggan')
+            ->limit(10)
+            ->get(['id', 'nama_pelanggan', 'no_telp'])
+            ->map(static fn (Pelanggan $pelanggan): array => [
+                'id' => $pelanggan->id,
+                'nama' => $pelanggan->nama_pelanggan,
+                'telepon' => $pelanggan->no_telp,
+                'jumlah_transaksi' => (int) $pelanggan->transaksi_count,
+            ])
+            ->values();
+
+        return response()->json(['results' => $results]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -206,10 +249,12 @@ class CucianController extends Controller
         }
 
         $transaksi = DB::transaction(function () use ($validated, $paket) {
-            $pelanggan = Pelanggan::updateOrCreate(
-                ['no_telp' => $validated['no_telp']],
-                ['nama_pelanggan' => $validated['nama_pelanggan']],
-            );
+            $pelanggan = $validated['jenis_pelanggan'] === 'lama'
+                ? Pelanggan::query()->findOrFail($validated['pelanggan_id'])
+                : Pelanggan::updateOrCreate(
+                    ['no_telp' => $validated['no_telp']],
+                    ['nama_pelanggan' => $validated['nama_pelanggan']],
+                );
 
             $transaksi = Transaksi::create([
                 'no_nota' => $this->nomorNota($validated['tanggal_masuk']),
@@ -219,6 +264,10 @@ class CucianController extends Controller
                 'estimasi_selesai' => $validated['estimasi_selesai'],
                 'total_harga' => $validated['total_harga'],
                 'status_cucian' => 'antrean',
+                'status_pembayaran' => $validated['status_pembayaran'],
+                'metode_pembayaran' => $validated['status_pembayaran'] === 'lunas'
+                    ? $validated['metode_pembayaran']
+                    : null,
                 'catatan' => $validated['catatan'] ?? null,
             ]);
 
@@ -280,6 +329,10 @@ class CucianController extends Controller
                 'pelanggan_id' => $validated['pelanggan_id'],
                 'tanggal_masuk' => $validated['tanggal_masuk'],
                 'estimasi_selesai' => $validated['estimasi_selesai'] ?? null,
+                'status_pembayaran' => $validated['status_pembayaran'],
+                'metode_pembayaran' => $validated['status_pembayaran'] === 'lunas'
+                    ? $validated['metode_pembayaran']
+                    : null,
                 'catatan' => $validated['catatan'] ?? null,
             ]);
 
@@ -303,12 +356,15 @@ class CucianController extends Controller
      */
     private function validatedData(Request $request): array
     {
+        $this->normalizeDateInputs($request);
         $jumlahLayanan = count((array) $request->input('paket_laundry_id', []));
 
         return $request->validate([
             'pelanggan_id' => ['required', 'integer', 'exists:pelanggan,id'],
-            'tanggal_masuk' => ['required', 'date'],
-            'estimasi_selesai' => ['nullable', 'date', 'after_or_equal:tanggal_masuk'],
+            'tanggal_masuk' => ['required', 'date_format:Y-m-d'],
+            'estimasi_selesai' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:tanggal_masuk'],
+            'status_pembayaran' => ['required', Rule::in(['lunas', 'belum_lunas'])],
+            'metode_pembayaran' => ['nullable', 'required_if:status_pembayaran,lunas', Rule::in(['tunai', 'qris'])],
             'catatan' => ['nullable', 'string', 'max:2000'],
             'paket_laundry_id' => ['required', 'array', 'min:1'],
             'paket_laundry_id.*' => ['required', 'integer', 'exists:paket_laundry,id'],
@@ -317,7 +373,13 @@ class CucianController extends Controller
         ], [
             'pelanggan_id.required' => 'Pilih pelanggan terlebih dahulu.',
             'tanggal_masuk.required' => 'Tanggal masuk wajib diisi.',
+            'tanggal_masuk.date_format' => 'Tanggal masuk harus mengikuti format tanggal yang dipilih pada Pengaturan.',
+            'estimasi_selesai.date_format' => 'Estimasi selesai harus mengikuti format tanggal yang dipilih pada Pengaturan.',
             'estimasi_selesai.after_or_equal' => 'Estimasi selesai tidak boleh sebelum tanggal masuk.',
+            'status_pembayaran.required' => 'Pilih status pembayaran.',
+            'status_pembayaran.in' => 'Status pembayaran yang dipilih tidak valid.',
+            'metode_pembayaran.required_if' => 'Pilih metode pembayaran jika transaksi sudah lunas.',
+            'metode_pembayaran.in' => 'Metode pembayaran yang dipilih tidak valid.',
             'paket_laundry_id.required' => 'Tambahkan minimal satu layanan.',
             'paket_laundry_id.*.exists' => 'Paket laundry yang dipilih tidak tersedia.',
             'berat_qty.*.gt' => 'Berat atau jumlah harus lebih besar dari nol.',
@@ -329,10 +391,15 @@ class CucianController extends Controller
      */
     private function validatedDataCucianBaru(Request $request): array
     {
-        $noTelp = preg_replace('/\D+/', '', (string) $request->input('no_telp', '')) ?? '';
+        $this->normalizeDateInputs($request);
+        $jenisPelanggan = (string) $request->input('jenis_pelanggan', '');
+        $noTelp = $jenisPelanggan === 'baru'
+            ? (preg_replace('/\D+/', '', (string) $request->input('no_telp', '')) ?? '')
+            : null;
         $totalHarga = preg_replace('/\D+/', '', (string) $request->input('total_harga', '')) ?? '';
         $request->merge([
             'no_telp' => $noTelp,
+            'nama_pelanggan' => $jenisPelanggan === 'baru' ? $request->input('nama_pelanggan') : null,
             'total_harga' => $totalHarga,
         ]);
 
@@ -343,28 +410,57 @@ class CucianController extends Controller
             : ['required', 'integer', 'min:1', 'max:99999'];
 
         return $request->validate([
-            'nama_pelanggan' => ['required', 'string', 'max:255'],
-            'no_telp' => ['required', 'digits_between:10,13'],
+            'jenis_pelanggan' => ['required', Rule::in(['baru', 'lama'])],
+            'pelanggan_id' => $jenisPelanggan === 'lama'
+                ? ['required', 'integer', 'exists:pelanggan,id']
+                : ['nullable', 'integer'],
+            'nama_pelanggan' => $jenisPelanggan === 'baru'
+                ? ['required', 'string', 'max:255']
+                : ['nullable', 'string', 'max:255'],
+            'no_telp' => $jenisPelanggan === 'baru'
+                ? ['required', 'digits_between:10,13', Rule::unique('pelanggan', 'no_telp')]
+                : ['nullable', 'digits_between:10,13'],
             'layanan' => ['required', Rule::in(array_keys(LaundryOptions::SERVICES))],
             'berat_qty' => $aturanJumlah,
-            'tanggal_masuk' => ['required', 'date'],
-            'estimasi_selesai' => ['required', 'date', 'after_or_equal:tanggal_masuk'],
+            'tanggal_masuk' => ['required', 'date_format:Y-m-d'],
+            'estimasi_selesai' => ['required', 'date_format:Y-m-d', 'after_or_equal:tanggal_masuk'],
             'total_harga' => ['required', 'integer', 'min:1', 'max:9999999999'],
+            'status_pembayaran' => ['required', Rule::in(['lunas', 'belum_lunas'])],
+            'metode_pembayaran' => ['nullable', 'required_if:status_pembayaran,lunas', Rule::in(['tunai', 'qris'])],
             'catatan' => ['nullable', 'string', 'max:2000'],
         ], [
             'nama_pelanggan.required' => 'Nama pelanggan wajib diisi.',
             'no_telp.required' => 'Nomor telepon wajib diisi.',
             'no_telp.digits_between' => 'Nomor telepon harus berisi 10 sampai 13 angka.',
+            'no_telp.unique' => 'Nomor telepon ini sudah terdaftar. Pilih Pelanggan Lama untuk menggunakan data pelanggan yang ada.',
+            'jenis_pelanggan.required' => 'Pilih jenis pelanggan terlebih dahulu.',
+            'jenis_pelanggan.in' => 'Jenis pelanggan yang dipilih tidak valid.',
+            'pelanggan_id.required' => 'Cari dan pilih pelanggan lama terlebih dahulu.',
+            'pelanggan_id.exists' => 'Pelanggan yang dipilih tidak ditemukan. Cari kembali pelanggan tersebut.',
             'layanan.required' => 'Pilih jenis layanan terlebih dahulu.',
             'layanan.in' => 'Jenis layanan yang dipilih tidak tersedia.',
+            'tanggal_masuk.date_format' => 'Tanggal masuk harus mengikuti format tanggal yang dipilih pada Pengaturan.',
             'berat_qty.min' => $unitLayanan === 'kg'
                 ? 'Berat cucian minimal 3 kg.'
                 : 'Jumlah minimal 1 pcs.',
             'estimasi_selesai.required' => 'Tanggal estimasi selesai wajib diisi.',
+            'estimasi_selesai.date_format' => 'Estimasi selesai harus mengikuti format tanggal yang dipilih pada Pengaturan.',
             'estimasi_selesai.after_or_equal' => 'Estimasi selesai tidak boleh sebelum tanggal masuk.',
             'total_harga.required' => 'Total harga wajib diisi.',
             'total_harga.integer' => 'Total harga harus berupa angka rupiah tanpa desimal.',
             'total_harga.min' => 'Total harga harus lebih besar dari nol.',
+            'status_pembayaran.required' => 'Pilih status pembayaran.',
+            'status_pembayaran.in' => 'Status pembayaran yang dipilih tidak valid.',
+            'metode_pembayaran.required_if' => 'Pilih metode pembayaran jika transaksi sudah lunas.',
+            'metode_pembayaran.in' => 'Metode pembayaran yang dipilih tidak valid.',
+        ]);
+    }
+
+    private function normalizeDateInputs(Request $request): void
+    {
+        $request->merge([
+            'tanggal_masuk' => LaundryDateFormatter::normalizeInput($request->input('tanggal_masuk')),
+            'estimasi_selesai' => LaundryDateFormatter::normalizeInput($request->input('estimasi_selesai')),
         ]);
     }
 

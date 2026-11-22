@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('completion_message')->nullable();
             $table->boolean('notify_browser')->default(true);
             $table->boolean('notify_message')->default(true);
-            $table->string('date_format', 10)->default('d-m-Y');
+            $table->string('date_format', 10)->default('d/m/Y');
             $table->boolean('confirm_logout')->default(true);
             $table->timestamps();
         });

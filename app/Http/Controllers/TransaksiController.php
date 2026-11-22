@@ -170,7 +170,7 @@ class TransaksiController extends Controller
     private function queryTerfilter(Request $request, Carbon $awalBulan, Carbon $akhirBulan): Builder
     {
         $query = Transaksi::query()
-            ->with(['pelanggan', 'detailTransaksi.paketLaundry'])
+            ->with(['pelanggan', 'admin', 'detailTransaksi.paketLaundry'])
             ->whereBetween('tanggal_masuk', [$awalBulan->toDateString(), $akhirBulan->toDateString()]);
 
         $search = trim((string) $request->query('search', ''));

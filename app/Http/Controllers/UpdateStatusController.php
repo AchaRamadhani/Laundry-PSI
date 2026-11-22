@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\StatusLaundry;
 use App\Models\Transaksi;
+use App\Support\LaundryDateFormatter;
 use App\Support\LaundryOptions;
+use App\Support\LaundryProgress;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -107,8 +109,9 @@ class UpdateStatusController extends Controller
         $cucian = $query->orderByDesc('tanggal_masuk')->orderByDesc('created_at')
             ->paginate(10)->withQueryString();
         $notaTerpilih = (string) $request->query('nota', '');
-        $terpilih = $cucian->getCollection()->firstWhere('no_nota', $notaTerpilih)
-            ?? $cucian->first();
+        $terpilih = $notaTerpilih !== ''
+            ? $cucian->getCollection()->firstWhere('no_nota', $notaTerpilih)
+            : null;
         $riwayatTerpilih = collect();
         $tahapAktif = 0;
         $tahapan = collect(self::STEPS)->map(fn ($label, $key) => (object) [
@@ -117,9 +120,11 @@ class UpdateStatusController extends Controller
             'warna' => self::COLORS[$key],
         ])->values();
         $tahapTanggal = [];
+        $tahapanWajib = [];
 
         if ($terpilih) {
             $terpilih->load(['pelanggan', 'detailTransaksi.paketLaundry', 'statusLaundry.admin']);
+            $tahapanWajib = LaundryProgress::requiredStages($terpilih);
             $statusKey = $this->normalisasiStatus($terpilih->status_cucian);
             $tahapAktif = array_search($statusKey, array_keys(self::STEPS), true);
             $tahapAktif = $tahapAktif === false ? 0 : $tahapAktif;
@@ -128,7 +133,7 @@ class UpdateStatusController extends Controller
             foreach (array_keys(self::STEPS) as $key) {
                 $perubahan = $riwayatTerpilih->filter(fn ($item) => $this->normalisasiStatus($item->status) === $key)->last();
                 $tahapTanggal[$key] = $perubahan
-                    ? Carbon::parse($perubahan->waktu_status)->format('d M Y, H.i')
+                    ? LaundryDateFormatter::format($perubahan->waktu_status, true)
                     : '—';
             }
         }
@@ -138,25 +143,37 @@ class UpdateStatusController extends Controller
         return view('update-status.index', compact(
             'bulan', 'tahun', 'namaBulan', 'statusCards', 'cucian',
             'search', 'statusFilter', 'paketId', 'terpilih', 'tahapAktif',
-            'riwayatTerpilih', 'tahapan', 'tahapTanggal', 'riwayatTerbaru'
+            'riwayatTerpilih', 'tahapan', 'tahapTanggal', 'tahapanWajib', 'riwayatTerbaru'
         ));
     }
 
     public function update(Request $request, Transaksi $transaksi): RedirectResponse
     {
+        $transaksi->loadMissing(['detailTransaksi.paketLaundry', 'statusLaundry']);
+        $statusYangDiizinkan = LaundryProgress::availableTargets($transaksi);
+        $perluMetodePelunasan = $request->input('status_baru') === 'diambil'
+            && $transaksi->status_pembayaran !== 'lunas';
+
         $validated = $request->validate([
-            'status_baru' => ['required', Rule::in(array_keys(self::STEPS))],
+            'status_baru' => ['required', Rule::in($statusYangDiizinkan)],
             'catatan_status' => ['nullable', 'string', 'max:500'],
+            'metode_pembayaran_pelunasan' => [
+                Rule::requiredIf($perluMetodePelunasan),
+                'nullable',
+                Rule::in(['tunai', 'qris']),
+            ],
         ], [
             'status_baru.required' => 'Pilih status baru untuk cucian ini.',
-            'status_baru.in' => 'Status yang dipilih tidak dikenali.',
+            'status_baru.in' => 'Pilih status cucian yang masih berlaku untuk layanan ini dan tidak mendahului status saat ini.',
+            'metode_pembayaran_pelunasan.required' => 'Pilih metode pembayaran untuk melunasi transaksi sebelum cucian diambil.',
+            'metode_pembayaran_pelunasan.in' => 'Metode pelunasan yang dipilih tidak valid.',
         ]);
 
         $statusBaru = $validated['status_baru'];
         $catatan = trim((string) ($validated['catatan_status'] ?? ''));
         $statusSebelumnya = $this->normalisasiStatus($transaksi->status_cucian);
 
-        if ($statusSebelumnya === $statusBaru && $catatan === '') {
+        if ($statusSebelumnya === $statusBaru && $catatan === '' && ! $perluMetodePelunasan) {
             $redirectQuery = $request->query();
             unset($redirectQuery['page']);
 
@@ -165,13 +182,25 @@ class UpdateStatusController extends Controller
             ))->with('success', 'Status cucian tersebut sudah dipilih.');
         }
 
-        DB::transaction(function () use ($transaksi, $statusBaru, $catatan) {
-            $transaksi->update(['status_cucian' => $statusBaru]);
+        DB::transaction(function () use ($transaksi, $statusBaru, $catatan, $perluMetodePelunasan, $validated) {
+            $perubahan = ['status_cucian' => $statusBaru];
+            if ($perluMetodePelunasan) {
+                $perubahan['status_pembayaran'] = 'lunas';
+                $perubahan['metode_pembayaran'] = $validated['metode_pembayaran_pelunasan'];
+            }
+            $transaksi->update($perubahan);
+
+            $catatanDefault = 'Status diperbarui menjadi '.self::STEPS[$statusBaru].'.';
+            if ($perluMetodePelunasan) {
+                $metodeLabel = $validated['metode_pembayaran_pelunasan'] === 'qris' ? 'QRIS' : 'Tunai / Cash';
+                $catatanDefault .= ' Pembayaran dilunasi menggunakan '.$metodeLabel.'.';
+            }
+
             StatusLaundry::create([
                 'no_nota' => $transaksi->no_nota,
                 'id_admin' => auth()->id(),
                 'status' => $statusBaru,
-                'catatan_status' => $catatan !== '' ? $catatan : 'Status diperbarui menjadi '.self::STEPS[$statusBaru].'.',
+                'catatan_status' => $catatan !== '' ? $catatan : $catatanDefault,
                 'waktu_status' => now(),
             ]);
         });
@@ -181,7 +210,27 @@ class UpdateStatusController extends Controller
 
         return redirect()->route('update-status.index', array_merge(
             $redirectQuery, ['nota' => $transaksi->no_nota]
-        ))->with('success', 'Status cucian berhasil diperbarui dan riwayatnya disimpan.');
+        ))->with(
+            'success',
+            $perluMetodePelunasan
+                ? 'Status cucian diperbarui dan pembayaran berhasil dilunasi.'
+                : 'Status cucian berhasil diperbarui dan riwayatnya disimpan.'
+        );
+    }
+
+    public function markCompletionWhatsappSent(Request $request, Transaksi $transaksi): RedirectResponse
+    {
+        if ($this->normalisasiStatus($transaksi->status_cucian) !== 'selesai') {
+            return redirect()->route('update-status.index', ['nota' => $transaksi->no_nota])
+                ->withErrors(['whatsapp' => 'Pesan WhatsApp hanya dapat ditandai setelah status cucian Selesai.']);
+        }
+
+        if (! $transaksi->completion_whatsapp_sent_at) {
+            $transaksi->forceFill(['completion_whatsapp_sent_at' => now()])->save();
+        }
+
+        return redirect()->route('update-status.index', ['nota' => $transaksi->no_nota])
+            ->with('success', 'Pesan WhatsApp cucian selesai sudah ditandai terkirim.');
     }
 
     public function riwayat(): View
