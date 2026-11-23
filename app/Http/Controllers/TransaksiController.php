@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaksi;
 use App\Support\LaundryOptions;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransaksiController extends Controller
 {
@@ -115,7 +115,7 @@ class TransaksiController extends Controller
         $data = $this->dataRekap($request);
         $logoPath = public_path('images/logo-g-laundry.png');
         $data['logoData'] = is_file($logoPath)
-            ? 'data:image/png;base64,' . base64_encode((string) file_get_contents($logoPath))
+            ? 'data:image/png;base64,'.base64_encode((string) file_get_contents($logoPath))
             : null;
         $filename = sprintf('rekap-transaksi-%04d-%02d.pdf', $data['tahun'], $data['bulan']);
 
