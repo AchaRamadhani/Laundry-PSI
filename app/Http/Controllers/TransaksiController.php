@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransaksiController extends Controller
 {
@@ -106,19 +107,38 @@ class TransaksiController extends Controller
 
     public function cetak(Request $request): View
     {
+        return view('transaksi.print', $this->dataRekap($request));
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        $data = $this->dataRekap($request);
+        $logoPath = public_path('images/logo-g-laundry.png');
+        $data['logoData'] = is_file($logoPath)
+            ? 'data:image/png;base64,' . base64_encode((string) file_get_contents($logoPath))
+            : null;
+        $filename = sprintf('rekap-transaksi-%04d-%02d.pdf', $data['tahun'], $data['bulan']);
+
+        return Pdf::loadView('transaksi.pdf', $data)
+            ->setPaper('a4', 'landscape')
+            ->download($filename);
+    }
+
+    private function dataRekap(Request $request): array
+    {
         [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan] = $this->periode($request);
         $transaksi = $this->queryTerfilter($request, $awalBulan, $akhirBulan)
             ->orderBy('tanggal_masuk')
             ->orderBy('no_nota')
             ->get();
 
-        return view('transaksi.print', [
+        return [
             'transaksi' => $transaksi,
             'bulan' => $bulan,
             'tahun' => $tahun,
             'namaBulan' => $namaBulan,
             'totalPendapatan' => $transaksi->sum('total_harga'),
-        ]);
+        ];
     }
 
     public function aktivitas(): View

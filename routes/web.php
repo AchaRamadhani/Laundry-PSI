@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
     Route::get('/transaksi/cetak', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
+    Route::get('/transaksi/cetak/pdf', [TransaksiController::class, 'downloadPdf'])->name('transaksi.pdf');
     Route::get('/transaksi/aktivitas', [TransaksiController::class, 'aktivitas'])->name('transaksi.aktivitas');
 
     Route::get('/update-status', [UpdateStatusController::class, 'index'])->name('update-status.index');

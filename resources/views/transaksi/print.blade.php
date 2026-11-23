@@ -11,6 +11,7 @@
         .print-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin: 0 auto 18px; max-width: 1100px; }
         .print-toolbar button, .print-toolbar a { padding: 9px 14px; color: #fff; border: 0; border-radius: 5px; background: #0846e9; cursor: pointer; font: inherit; text-decoration: none; }
         .print-toolbar a { color: #35405a; border: 1px solid #d9dde6; background: #fff; }
+        .print-toolbar a.print-download { color: #fff; border: 0; background: #0846e9; }
         .print-sheet { max-width: 1100px; margin: 0 auto; }
         .print-brand { display: flex; align-items: center; gap: 16px; padding-bottom: 16px; border-bottom: 2px solid #0846e9; }
         .print-brand img { width: 125px; height: 85px; object-fit: contain; }
@@ -29,7 +30,7 @@
     </style>
 </head>
 <body>
-    <div class="print-toolbar"><a href="{{ route('transaksi.index') }}">Kembali</a><button type="button" onclick="window.print()">Cetak</button></div>
+    <div class="print-toolbar"><a href="{{ route('transaksi.index') }}">Kembali</a><a class="print-download" href="{{ route('transaksi.pdf', request()->query()) }}">Cetak</a></div>
     <main class="print-sheet">
         <header class="print-brand"><img src="{{ asset('images/logo-g-laundry.png') }}" alt="Logo G'Laundry"><div><h1>Rekap Transaksi</h1><p>Periode {{ $namaBulan[$bulan] }} {{ $tahun }} · G'Laundry</p></div></header>
         <div class="print-meta"><div><strong>Dicetak:</strong> {{ \App\Support\LaundryDateFormatter::format(now(), true) }}</div><div class="print-total">Jumlah transaksi<strong>{{ number_format($transaksi->count(), 0, ',', '.') }}</strong></div><div class="print-total">Total pendapatan<strong>Rp {{ number_format((float) $totalPendapatan, 0, ',', '.') }}</strong></div></div>
@@ -52,6 +53,5 @@
         </table>
         <footer class="print-footer">Dokumen rekap transaksi G'Laundry · Nota pelanggan tetap tersedia di sistem.</footer>
     </main>
-    <script>window.addEventListener('load', () => window.print());</script>
 </body>
 </html>

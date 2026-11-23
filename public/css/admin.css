@@ -429,9 +429,9 @@ html { min-height: 100%; background: #e7e3e3; }
 .transaksi-heading p { margin: 4px 0 0; color: #70788d; font-size: 10px; }
 .transaksi-note { display: flex; max-width: 690px; align-items: center; gap: 7px; margin-top: 9px; padding: 5px 8px; color: #42618d; border: 1px solid #d8e3f2; border-radius: 5px; background: #f2f7ff; font-size: 8px; line-height: 1.45; }
 .transaksi-note svg { width: 14px; height: 14px; flex: 0 0 14px; fill: none; stroke: #2d6cda; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
-.transaksi-print-button { display: inline-flex; min-height: 35px; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; color: #fff; border: 1px solid #063fd2; border-radius: 5px; background: linear-gradient(135deg, #074bed, #0637c8); box-shadow: 0 2px 4px rgb(8 70 233 / 13%); font-size: 10px; font-weight: 700; text-decoration: none; white-space: nowrap; }
-.transaksi-print-button:hover { color: #fff; background: #0635bd; }
-.transaksi-print-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.transaksi-export-button { display: inline-flex; min-height: 35px; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; color: #fff; border: 1px solid #063fd2; border-radius: 5px; background: linear-gradient(135deg, #074bed, #0637c8); box-shadow: 0 2px 4px rgb(8 70 233 / 13%); font-size: 10px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.transaksi-export-button:hover { color: #fff; background: #0635bd; }
+.transaksi-export-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 .transaksi-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .transaksi-metric { display: flex; min-width: 0; min-height: 91px; align-items: center; gap: 11px; padding: 12px; border: 1px solid #f0f1f5; border-radius: 6px; background: #fff; }
 .transaksi-metric-icon { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 50%; }
@@ -531,7 +531,7 @@ html { min-height: 100%; background: #e7e3e3; }
 @media (max-width: 600px) {
     .transaksi-heading { align-items: stretch; flex-direction: column; padding: 2px 3px; }
     .transaksi-heading h1 { font-size: 22px; }
-    .transaksi-print-button { width: 100%; }
+    .transaksi-export-button { width: 100%; }
     .transaksi-metrics { gap: 7px; }
     .transaksi-metric { min-height: 77px; gap: 8px; padding: 8px; }
     .transaksi-metric-icon { width: 36px; height: 36px; flex-basis: 36px; }
@@ -1441,7 +1441,7 @@ html { min-height: 100%; background: #e7e3e3; }
 .cucian-filter-button, .transaksi-filter-button, .update-status-filters > button,
 .pelanggan-filter-button, .paket-filter-button, .paket-reset-button,
 .transaksi-reset, .cucian-reset, .pelanggan-reset-button { min-height: 38px; height: auto; font-size: 12px !important; }
-.cucian-add-button, .cucian-secondary-button, .transaksi-print-button,
+.cucian-add-button, .cucian-secondary-button, .transaksi-export-button,
 .pelanggan-add-button, .pelanggan-secondary-button, .paket-add-button,
 .paket-secondary-button, .settings-save-button, .panel-action, .history-back-button {
     min-height: 40px;

@@ -21,9 +21,9 @@
                     Nota digital dibuat otomatis saat data cucian disimpan. Kirim ulang nota akan membuka WhatsApp dengan pesan nota yang sudah terisi otomatis.
                 </div>
             </div>
-            <a class="transaksi-print-button" href="{{ route('transaksi.cetak', request()->query()) }}" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 17H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/><path d="M18 12h.01"/></svg>
-                Cetak Rekap
+            <a class="transaksi-export-button" href="{{ route('transaksi.cetak', request()->query()) }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></svg>
+                Ekspor Rekap
             </a>
         </section>
 
