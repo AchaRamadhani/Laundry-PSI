@@ -8,7 +8,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
@@ -110,7 +112,7 @@ class TransaksiController extends Controller
         return view('transaksi.print', $this->dataRekap($request));
     }
 
-    public function downloadPdf(Request $request)
+    public function downloadPdf(Request $request): Response
     {
         $data = $this->dataRekap($request);
         $logoPath = public_path('images/logo-g-laundry.png');
@@ -124,6 +126,15 @@ class TransaksiController extends Controller
             ->download($filename);
     }
 
+    /**
+     * @return array{
+     *     transaksi: Collection<int, Transaksi>,
+     *     bulan: int,
+     *     tahun: int,
+     *     namaBulan: array<int, string>,
+     *     totalPendapatan: int|float
+     * }
+     */
     private function dataRekap(Request $request): array
     {
         [$bulan, $tahun, $awalBulan, $akhirBulan, $namaBulan] = $this->periode($request);
