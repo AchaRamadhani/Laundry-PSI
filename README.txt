@@ -1,10 +1,9 @@
-Patch: arahkan tautan WhatsApp langsung ke WhatsApp Web
+PERBAIKAN DROPDOWN DURASI PAKET LAUNDRY
 
-Salin folder app dan resources dari ZIP ini ke folder proyek Laravel, gabungkan dengan folder yang sudah ada, dan izinkan overwrite untuk tiga file yang sama.
+Salin kedua file di dalam ZIP ke root folder project Laravel dan izinkan file lama ditimpa:
+- resources/views/paket-laundry/form.blade.php
+- public/css/admin.css
 
-File yang diubah:
-- app/Support/WhatsAppNota.php
-- app/Support/WhatsAppContact.php
-- resources/views/kontak/index.blade.php
+Perubahan: daftar durasi 1-7 hari memakai menu yang posisinya menyesuaikan ruang layar, bisa digulir jika ruang terbatas, dan tidak lagi menutupi tombol form secara tidak terduga. Pemilihan tetap mengirim nilai durasi ke server dan validasi wajib tetap berlaku.
 
-Tautan pesan dan kontak sekarang memakai https://web.whatsapp.com/send agar diarahkan ke WhatsApp Web.
+Setelah menyalin, refresh halaman dengan Ctrl+F5. Jika Laravel masih menampilkan cache lama, jalankan `php artisan view:clear` dari folder project.
