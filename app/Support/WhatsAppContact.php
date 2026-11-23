@@ -36,13 +36,13 @@ class WhatsAppContact
             $digits = '6281242910340';
         }
 
-        $whatsappUrl = 'https://wa.me/'.$digits;
+        $whatsappUrl = 'https://web.whatsapp.com/send?phone='.$digits;
         $customerMessage = self::customerMessage();
 
         return [
             'whatsappDisplay' => $display,
             'whatsappUrl' => $whatsappUrl,
-            'customerWhatsappUrl' => $whatsappUrl.'?text='.rawurlencode($customerMessage),
+            'customerWhatsappUrl' => $whatsappUrl.'&text='.rawurlencode($customerMessage),
             'customerWhatsappMessage' => $customerMessage,
         ];
     }

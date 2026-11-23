@@ -253,6 +253,6 @@ class WhatsAppNota
 
     private static function whatsappUrl(string $phone, string $message): string
     {
-        return 'https://wa.me/'.$phone.'?text='.rawurlencode($message);
+        return 'https://web.whatsapp.com/send?phone='.$phone.'&text='.rawurlencode($message);
     }
 }

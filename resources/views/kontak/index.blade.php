@@ -138,7 +138,7 @@
             const message = document.getElementById('contact-whatsapp-message').value.trim();
             if (!message) return;
 
-            const url = event.currentTarget.dataset.whatsappUrl + '?text=' + encodeURIComponent(message);
+            const url = event.currentTarget.dataset.whatsappUrl + '&text=' + encodeURIComponent(message);
             window.open(url, '_blank', 'noopener,noreferrer');
         });
     </script>

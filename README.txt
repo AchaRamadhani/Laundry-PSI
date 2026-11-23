@@ -1,13 +1,10 @@
-G'Laundry - Revisi Form Paket Laundry
+Patch: arahkan tautan WhatsApp langsung ke WhatsApp Web
 
-Salin isi arsip ini ke folder utama Laundry-PSI dan izinkan file lama diganti.
-Arsip mempertahankan struktur folder resources, public, dan app.
+Salin folder app dan resources dari ZIP ini ke folder proyek Laravel, gabungkan dengan folder yang sudah ada, dan izinkan overwrite untuk tiga file yang sama.
 
-Yang berubah:
-- Form tambah/ubah paket menjadi dialog seperti frame Figma.
-- Field form: nama paket, deskripsi maksimal 200 karakter, harga mulai, dan durasi 1-7 hari.
-- Kategori ditentukan otomatis dari nama paket (Satuan, Express/Treatment, atau Kiloan).
-- Paket baru dibuat dengan status aktif; status paket yang diubah tetap dipertahankan.
+File yang diubah:
+- app/Support/WhatsAppNota.php
+- app/Support/WhatsAppContact.php
+- resources/views/kontak/index.blade.php
 
-Setelah menyalin, muat ulang halaman aplikasi. Jika tampilan lama masih tersimpan,
-lakukan refresh paksa pada browser.
+Tautan pesan dan kontak sekarang memakai https://web.whatsapp.com/send agar diarahkan ke WhatsApp Web.
