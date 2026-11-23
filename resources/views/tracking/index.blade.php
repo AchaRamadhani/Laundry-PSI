@@ -103,9 +103,9 @@
                             <label class="sr-only" for="tracking-token">Token tracking</label>
                             <div class="input-wrap">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h6l5 5v13H8z"/><path d="M14 3v5h5M11 13h5M11 17h5"/></svg>
-                                <input id="tracking-token" name="token_tracking" type="text" value="{{ $tokenTracking }}" placeholder="Masukkan token tracking" autocomplete="off" minlength="20" maxlength="20" required>
+                                <input id="tracking-token" name="token_tracking" type="text" value="{{ $tokenTracking }}" placeholder="Masukkan token tracking" autocomplete="off" maxlength="20" aria-describedby="tracking-token-error" @if ($tokenValidationError) aria-invalid="true" @endif>
                             </div>
-                            @error('token_tracking')<p class="form-error">{{ $message }}</p>@enderror
+                            <p class="form-error tracking-token-error" id="tracking-token-error" role="alert" @if (! $tokenValidationError) hidden @endif>{{ $tokenValidationError }}</p>
                             <button class="check-button" type="submit">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
                                 Cek Status
@@ -160,11 +160,51 @@
     <script>
         const trackingMenuToggle = document.querySelector('.menu-toggle');
         const trackingPrimaryNav = document.querySelector('.primary-nav');
+        const trackingSearchForm = document.querySelector('.tracking-search-form');
+        const trackingTokenInput = document.querySelector('#tracking-token');
+        const trackingTokenError = document.querySelector('#tracking-token-error');
 
         trackingMenuToggle?.addEventListener('click', () => {
             const isOpen = trackingPrimaryNav.classList.toggle('is-open');
             trackingMenuToggle.setAttribute('aria-expanded', String(isOpen));
         });
+
+        const showTrackingTokenError = (message) => {
+            if (trackingTokenError) {
+                trackingTokenError.textContent = message;
+                trackingTokenError.hidden = false;
+            }
+            trackingTokenInput?.setAttribute('aria-invalid', 'true');
+        };
+
+        const clearTrackingTokenError = () => {
+            if (trackingTokenError) {
+                trackingTokenError.textContent = '';
+                trackingTokenError.hidden = true;
+            }
+            trackingTokenInput?.removeAttribute('aria-invalid');
+        };
+
+        trackingSearchForm?.addEventListener('submit', (event) => {
+            const token = trackingTokenInput?.value.trim() || '';
+            if (!token) {
+                event.preventDefault();
+                showTrackingTokenError('Token tracking wajib diisi.');
+                trackingTokenInput?.focus();
+                return;
+            }
+
+            if (!/^[a-z0-9]{20}$/i.test(token)) {
+                event.preventDefault();
+                showTrackingTokenError('Token tracking harus terdiri dari 20 karakter berupa huruf dan angka.');
+                trackingTokenInput?.focus();
+                return;
+            }
+
+            clearTrackingTokenError();
+        });
+
+        trackingTokenInput?.addEventListener('input', clearTrackingTokenError);
     </script>
 </body>
 </html>

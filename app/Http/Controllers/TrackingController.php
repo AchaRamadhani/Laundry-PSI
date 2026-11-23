@@ -35,14 +35,20 @@ class TrackingController extends Controller
 
     public function index(Request $request, ?string $token = null): View
     {
-        $validated = $request->validate([
-            'token_tracking' => ['nullable', 'string', 'size:20'],
-        ]);
+        $tokenInput = $token ?? $request->query('token_tracking');
+        $tokenTracking = strtoupper(trim(is_string($tokenInput) ? $tokenInput : ''));
+        $tokenValidationError = null;
+        $tokenWasSubmitted = $token !== null || $request->query->has('token_tracking');
 
-        $tokenTracking = strtoupper(trim($token ?? ($validated['token_tracking'] ?? '')));
+        if ($tokenWasSubmitted && $tokenTracking === '') {
+            $tokenValidationError = 'Token tracking wajib diisi.';
+        } elseif ($tokenTracking !== '' && ! preg_match('/\A[A-Z0-9]{20}\z/', $tokenTracking)) {
+            $tokenValidationError = 'Token tracking harus terdiri dari 20 karakter berupa huruf dan angka.';
+        }
+
         $transaksi = null;
 
-        if ($tokenTracking !== '') {
+        if ($tokenTracking !== '' && $tokenValidationError === null) {
             $transaksi = TrackingToken::resolve($tokenTracking);
             $transaksi?->load([
                 'pelanggan:id,nama_pelanggan,no_telp',
@@ -74,6 +80,7 @@ class TrackingController extends Controller
 
         return view('tracking.index', array_merge([
             'tokenTracking' => $tokenTracking,
+            'tokenValidationError' => $tokenValidationError,
             'transaksi' => $transaksi,
             'stages' => self::STAGES,
             'currentKey' => $currentKey,
