@@ -419,7 +419,7 @@ class CucianController extends Controller
                 ? ['required', 'string', 'max:255']
                 : ['nullable', 'string', 'max:255'],
             'no_telp' => $jenisPelanggan === 'baru'
-                ? ['required', 'digits_between:10,13', Rule::unique('pelanggan', 'no_telp')]
+                ? ['required', 'digits_between:10,13', 'regex:/\A08[0-9]{8,11}\z/', Rule::unique('pelanggan', 'no_telp')]
                 : ['nullable', 'digits_between:10,13'],
             'layanan' => ['required', Rule::in(array_keys(LaundryOptions::SERVICES))],
             'berat_qty' => $aturanJumlah,
@@ -433,6 +433,7 @@ class CucianController extends Controller
             'nama_pelanggan.required' => 'Nama pelanggan wajib diisi.',
             'no_telp.required' => 'Nomor telepon wajib diisi.',
             'no_telp.digits_between' => 'Nomor telepon harus berisi 10 sampai 13 angka.',
+            'no_telp.regex' => 'Nomor telepon harus diawali 08 dan berisi maksimal 13 digit.',
             'no_telp.unique' => 'Nomor telepon ini sudah terdaftar. Pilih Pelanggan Lama untuk menggunakan data pelanggan yang ada.',
             'jenis_pelanggan.required' => 'Pilih jenis pelanggan terlebih dahulu.',
             'jenis_pelanggan.in' => 'Jenis pelanggan yang dipilih tidak valid.',

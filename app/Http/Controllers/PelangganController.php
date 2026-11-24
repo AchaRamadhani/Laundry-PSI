@@ -100,13 +100,18 @@ class PelangganController extends Controller
 
     public function store(Request $request): RedirectResponse|JsonResponse
     {
+        $request->merge([
+            'no_telp' => preg_replace('/\D+/', '', (string) $request->input('no_telp', '')) ?? '',
+        ]);
+
         $validated = $request->validate([
             'nama_pelanggan' => ['required', 'string', 'max:255'],
-            'no_telp' => ['required', 'digits_between:10,13', 'unique:pelanggan,no_telp'],
+            'no_telp' => ['required', 'digits_between:10,13', 'regex:/\A08[0-9]{8,11}\z/', 'unique:pelanggan,no_telp'],
         ], [
             'nama_pelanggan.required' => 'Nama pelanggan wajib diisi.',
             'no_telp.required' => 'Nomor telepon wajib diisi.',
             'no_telp.digits_between' => 'Nomor telepon harus terdiri dari 10 sampai 13 angka.',
+            'no_telp.regex' => 'Nomor telepon harus diawali 08 dan berisi maksimal 13 digit.',
             'no_telp.unique' => 'Nomor telepon sudah terdaftar.',
         ]);
 
@@ -146,17 +151,23 @@ class PelangganController extends Controller
 
     public function update(Request $request, Pelanggan $pelanggan): RedirectResponse
     {
+        $request->merge([
+            'no_telp' => preg_replace('/\D+/', '', (string) $request->input('no_telp', '')) ?? '',
+        ]);
+
         $validated = $request->validate([
             'nama_pelanggan' => ['required', 'string', 'max:255'],
             'no_telp' => [
                 'required',
                 'digits_between:10,13',
+                'regex:/\A08[0-9]{8,11}\z/',
                 Rule::unique('pelanggan', 'no_telp')->ignore($pelanggan->id),
             ],
         ], [
             'nama_pelanggan.required' => 'Nama pelanggan wajib diisi.',
             'no_telp.required' => 'Nomor telepon wajib diisi.',
             'no_telp.digits_between' => 'Nomor telepon harus terdiri dari 10 sampai 13 angka.',
+            'no_telp.regex' => 'Nomor telepon harus diawali 08 dan berisi maksimal 13 digit.',
             'no_telp.unique' => 'Nomor telepon sudah digunakan pelanggan lain.',
         ]);
 

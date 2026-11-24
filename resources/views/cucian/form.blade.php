@@ -234,8 +234,8 @@
 
                 <label class="cucian-figma-field">
                     <span>No. Telepon <b>*</b></span>
-                    <input type="tel" id="customerPhone" name="no_telp" value="{{ $customerType === 'lama' ? ($selectedPelanggan?->no_telp ?? '') : old('no_telp') }}" maxlength="18" inputmode="tel" placeholder="{{ $customerType === 'lama' ? 'Pilih pelanggan lama terlebih dahulu' : 'Contoh: 0812-4291-0340' }}" @required($customerType === 'baru') @readonly($customerType === 'lama')>
-                    <small>Masukkan nomor yang digunakan pada WhatsApp pelanggan.</small>
+                    <input type="tel" id="customerPhone" name="no_telp" value="{{ $customerType === 'lama' ? ($selectedPelanggan?->no_telp ?? '') : old('no_telp') }}" maxlength="13" inputmode="numeric" pattern="08[0-9]{8,11}" placeholder="{{ $customerType === 'lama' ? 'Pilih pelanggan lama terlebih dahulu' : 'Contoh: 081242910340' }}" @required($customerType === 'baru') @readonly($customerType === 'lama')>
+                    <small>Gunakan nomor yang diawali 08, maksimal 13 digit.</small>
                 </label>
                 <label class="cucian-figma-field">
                     <span>Jenis Layanan <b>*</b></span>
@@ -504,7 +504,7 @@
                 if (isExisting && !selectedCustomerId?.value) {
                     event.preventDefault();
                     showCustomerFeedback('Cari dan pilih pelanggan lama terlebih dahulu.', true);
-                    customerSearchInput?.focus();
+                    document.dispatchEvent(new CustomEvent('admin:required-missing', { detail: { focusTarget: customerSearchInput } }));
                 }
             });
             form?.addEventListener('reset', () => window.setTimeout(() => syncCustomerMode(), 0));

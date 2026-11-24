@@ -35,7 +35,8 @@
                         </label>
                         <label class="pelanggan-field">
                             <span>No telepon <b>*</b></span>
-                            <input type="tel" name="no_telp" value="{{ old('no_telp', $pelanggan?->no_telp) }}" inputmode="numeric" pattern="[0-9]{10,13}" minlength="10" maxlength="13" placeholder="Masukkan nomor telepon" required>
+                            <input type="tel" name="no_telp" value="{{ old('no_telp', $pelanggan?->no_telp) }}" inputmode="numeric" pattern="08[0-9]{8,11}" minlength="10" placeholder="Contoh: 081242910340" required>
+                            <small>Gunakan nomor yang diawali 08, maksimal 13 digit.</small>
                         </label>
                     </div>
                 </div>

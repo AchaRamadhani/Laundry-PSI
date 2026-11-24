@@ -109,6 +109,7 @@
     @fluxScripts
 
     <script src="{{ asset('js/admin-dropdowns.js') }}?v={{ filemtime(public_path('js/admin-dropdowns.js')) }}"></script>
+    <script src="{{ asset('js/admin-form-validation.js') }}?v={{ filemtime(public_path('js/admin-form-validation.js')) }}"></script>
 
     <script>
         let logoutTriggerButton = null;

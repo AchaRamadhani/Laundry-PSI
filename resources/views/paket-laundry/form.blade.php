@@ -207,7 +207,7 @@
                     event.preventDefault();
                     trigger.setAttribute('aria-invalid', 'true');
                     error.hidden = false;
-                    trigger.focus();
+                    document.dispatchEvent(new CustomEvent('admin:required-missing', { detail: { focusTarget: trigger } }));
                 });
 
                 duration.closest('form')?.addEventListener('reset', () => window.setTimeout(() => {

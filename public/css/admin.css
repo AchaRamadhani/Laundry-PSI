@@ -2944,6 +2944,74 @@ html { min-height: 100%; background: #e7e3e3; }
     background-color: #fff !important;
 }
 
+/* Show required-field validation beside the field in Indonesian. */
+.admin-main .field-validation-error {
+    display: block;
+    flex: 0 0 100%;
+    margin: 4px 0 0;
+    color: #b42318;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.admin-main :is(input, select, textarea)[aria-invalid="true"] {
+    border-color: #d92d20 !important;
+    box-shadow: 0 0 0 2px rgb(217 45 32 / 9%);
+}
+
+.admin-main :is(.figma-price-field, .figma-quantity-field, .paket-price-input, .settings-password-wrap):has([aria-invalid="true"]) {
+    border-color: #d92d20 !important;
+    box-shadow: 0 0 0 2px rgb(217 45 32 / 9%);
+}
+
+.required-fields-popup-open { overflow: hidden; }
+
+.required-fields-popup-backdrop {
+    position: fixed;
+    z-index: 12050;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgb(17 24 39 / 42%);
+    backdrop-filter: blur(3px);
+}
+
+.required-fields-popup {
+    display: flex;
+    width: min(100%, 390px);
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 24px 22px;
+    border: 1px solid #e3e8f1;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 22px 65px rgb(13 29 62 / 24%);
+    text-align: center;
+    outline: none;
+}
+
+.required-fields-popup-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    margin-bottom: 14px;
+    border-radius: 50%;
+    background: #fff4e5;
+    color: #d97706;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.required-fields-popup h2 { margin: 0; color: #172554; font-size: 19px; line-height: 1.3; }
+.required-fields-popup p { margin: 8px 0 19px; color: #596579; font-size: 14px; line-height: 1.5; }
+.required-fields-popup-button { min-width: 116px; min-height: 40px; padding: 0 18px; border: 1px solid #0754e8; border-radius: 8px; background: #0754e8; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.required-fields-popup-button:hover { background: #0646c8; }
+.required-fields-popup-button:focus-visible { outline: 3px solid rgb(7 84 232 / 25%); outline-offset: 3px; }
+
 /* Customer type and existing customer lookup on the new laundry form. */
 .customer-selection-section {
     margin-bottom: 22px;
@@ -3678,10 +3746,10 @@ html { min-height: 100%; background: #e7e3e3; }
 
 .admin-main .update-status-reset-button {
     color: #33415f;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
+    border: 1px solid #d7deea;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
     font-weight: 400;
 }
 
@@ -3708,7 +3776,7 @@ html { min-height: 100%; background: #e7e3e3; }
 }
 
 .admin-main .update-status-filter-actions > button:hover { background: #063ac7; }
-.admin-main .update-status-reset-button:hover { color: #0846e9; border-color: transparent; background: transparent; text-decoration: underline; }
+.admin-main .update-status-reset-button:hover { color: #0846e9; border-color: #9ab6f4; background: #f7faff; text-decoration: none; }
 .admin-main .update-status-filter-actions :is(button, a):focus-visible { outline: 3px solid rgb(8 70 233 / 20%); outline-offset: 2px; }
 
 @media (max-width: 760px) {
