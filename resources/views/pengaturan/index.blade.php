@@ -58,10 +58,22 @@
                         <div class="settings-hours settings-field-wide">
                             <span class="settings-field-label">Jadwal Operasional</span>
                             <div class="settings-hours-row settings-hours-schedule">
-                                <label class="settings-hour-field"><span>Jam Buka</span><input type="time" name="opening_time" value="{{ old('opening_time', substr($settings->opening_time ?: '07:00', 0, 5)) }}" required></label>
-                                <label class="settings-hour-field"><span>Mulai Istirahat</span><input type="time" name="break_start" value="{{ old('break_start', substr($settings->break_start ?: '12:00', 0, 5)) }}" required></label>
-                                <label class="settings-hour-field"><span>Selesai Istirahat</span><input type="time" name="break_end" value="{{ old('break_end', substr($settings->break_end ?: '13:00', 0, 5)) }}" required></label>
-                                <label class="settings-hour-field"><span>Jam Tutup</span><input type="time" name="closing_time" value="{{ old('closing_time', substr($settings->closing_time ?: '21:00', 0, 5)) }}" required></label>
+                                <label class="settings-hour-field">
+                                    <span>Jam Buka</span>
+                                    <span class="settings-time-control"><input class="settings-time-input" type="text" name="opening_time" value="{{ old('opening_time', substr($settings->opening_time ?: '07:00', 0, 5)) }}" placeholder="07:00" inputmode="text" maxlength="5" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                                </label>
+                                <label class="settings-hour-field">
+                                    <span>Mulai Istirahat</span>
+                                    <span class="settings-time-control"><input class="settings-time-input" type="text" name="break_start" value="{{ old('break_start', substr($settings->break_start ?: '12:00', 0, 5)) }}" placeholder="12:00" inputmode="text" maxlength="5" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                                </label>
+                                <label class="settings-hour-field">
+                                    <span>Selesai Istirahat</span>
+                                    <span class="settings-time-control"><input class="settings-time-input" type="text" name="break_end" value="{{ old('break_end', substr($settings->break_end ?: '13:00', 0, 5)) }}" placeholder="13:00" inputmode="text" maxlength="5" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                                </label>
+                                <label class="settings-hour-field">
+                                    <span>Jam Tutup</span>
+                                    <span class="settings-time-control"><input class="settings-time-input" type="text" name="closing_time" value="{{ old('closing_time', substr($settings->closing_time ?: '21:00', 0, 5)) }}" placeholder="21:00" inputmode="text" maxlength="5" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" autocomplete="off" required><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                                </label>
                             </div>
                         </div>
                         <label class="settings-field settings-field-wide">

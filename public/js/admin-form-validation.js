@@ -63,6 +63,10 @@
             return 'Nomor telepon harus diawali 08 dan terdiri dari 10 sampai 13 digit.';
         }
 
+        if (control.validity.patternMismatch && ['opening_time', 'break_start', 'break_end', 'closing_time'].includes(control.name)) {
+            return 'Gunakan format waktu 24 jam HH:mm, contoh 07:00.';
+        }
+
         if (control.validity.patternMismatch) {
             return `Format ${label.toLowerCase()} belum sesuai.`;
         }

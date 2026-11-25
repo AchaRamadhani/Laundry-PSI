@@ -55,7 +55,7 @@ body.admin-login-body {
 .admin-login-field-wrap { position: relative; display: flex; align-items: center; min-height: 50px; border: 1px solid var(--login-border); border-radius: 6px; background: #fff; transition: border-color .16s ease, box-shadow .16s ease; }
 .admin-login-field-wrap:focus-within { border-color: #74a4f2; box-shadow: 0 0 0 3px rgb(7 95 232 / 12%); }
 .admin-login-field-icon { display: grid; flex: 0 0 49px; width: 49px; height: 48px; place-items: center; color: #626c80; }
-.admin-login-field-icon svg { width: 24px; height: 24px; fill: currentColor; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.admin-login-field-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
 .admin-login-field-wrap input { width: 100%; min-width: 0; height: 48px; padding: 0 12px 0 0; color: #27334a; border: 0; outline: 0; background: transparent; font-size: 13px; }
 .admin-login-field-wrap input::placeholder { color: #7a8292; opacity: 1; }
 .password-toggle { display: grid; flex: 0 0 45px; width: 45px; height: 46px; place-items: center; color: #647087; border: 0; background: transparent; cursor: pointer; }
@@ -66,7 +66,11 @@ body.admin-login-body {
 
 .admin-login-options { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 24px; margin-top: -1px; }
 .remember-option { display: inline-flex; align-items: center; gap: 9px; color: #272b32; cursor: pointer; font-size: 10px; }
-.remember-option input { width: 21px; height: 21px; margin: 0; accent-color: var(--login-blue); cursor: pointer; }
+.remember-option input { display: grid; flex: 0 0 21px; width: 21px; height: 21px; place-content: center; margin: 0; appearance: none; -webkit-appearance: none; color: #fff; color-scheme: light; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer; transition: background .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.remember-option input::before { width: 5px; height: 10px; content: ""; transform: rotate(45deg) scale(0); border: solid currentColor; border-width: 0 2px 2px 0; transition: transform .12s ease; }
+.remember-option input:checked { border-color: var(--login-blue); background: var(--login-blue); }
+.remember-option input:checked::before { transform: rotate(45deg) scale(1); }
+.remember-option input:focus-visible { outline: 3px solid rgb(7 95 232 / 22%); outline-offset: 2px; }
 .admin-login-options > a { color: var(--login-blue); font-size: 10px; text-decoration: none; }
 .admin-login-options > a:hover { text-decoration: underline; }
 

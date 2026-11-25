@@ -1173,6 +1173,9 @@ html { min-height: 100%; background: #e7e3e3; }
 .settings-hour-field { display: flex; min-width: 0; flex-direction: column; gap: 5px; color: #4e535d; font-size: 8px; }
 .settings-hour-field input { width: 100%; min-width: 0; min-height: 30px; padding: 6px 7px; color: #181b21; border: 1px solid #d2d3d8; border-radius: 7px; outline: 0; background: #fff; font: inherit; font-size: 9px; }
 .settings-hour-field input:focus { border-color: #78a2ff; box-shadow: 0 0 0 2px rgb(8 70 233 / 8%); }
+.settings-time-control { position: relative; display: block; min-width: 0; }
+.settings-hour-field .settings-time-control input.settings-time-input { padding-right: 34px; font-variant-numeric: tabular-nums; }
+.settings-time-control > svg { position: absolute; top: 50%; right: 11px; width: 16px; height: 16px; transform: translateY(-50%); fill: none; stroke: #475569; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; pointer-events: none; }
 .settings-hours-separator { color: #2b2d34; font-size: 9px; }
 .settings-field textarea { min-height: 66px; resize: vertical; line-height: 1.35; }
 .settings-field > small { color: #737b8a; font-size: 8px; }
